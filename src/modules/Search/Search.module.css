@@ -3,6 +3,26 @@
     flex-direction: column;
 }
 
+.input_container {
+    display: flex;
+}
+
 .input {
     width: 30%;
+}
+
+.clinic_item {
+    border: 1px solid var(--clinic-item-color);
+    border-radius: 5px;
+    background-color: rgb(231, 245, 241);
+}
+
+.clinic_item:not(:last-child) {
+     margin-bottom: 5px;
+}
+
+.search_res {
+     display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 50px; 
 }
