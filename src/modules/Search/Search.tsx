@@ -9,6 +9,7 @@ import { ISearchResponse, IResItem } from '../../types/searchTypes';
 import * as dataApi from '../../services/dataApi';
 import Section from '../Section/Section';
 import SearchIcon from '../../svgFile/symbol-defs.svg';
+import MapComponent from '../Map/Map';
 import s from './Search.module.css';
 
 const Search: React.FC = () => {
@@ -136,7 +137,9 @@ const Search: React.FC = () => {
             )}
           </div>
 
-          <div>map</div>
+          <div>
+            <MapComponent />
+          </div>
         </div>
       </div>
     </Section>
