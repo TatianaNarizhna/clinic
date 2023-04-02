@@ -46,4 +46,5 @@ ul {
 :root {
   --clinic-item-color: rgb(194, 182, 182);
   --clinic-item-bckg: rgb(231, 245, 241);
+  --active-clinic: rgb(65, 145, 112);
 }

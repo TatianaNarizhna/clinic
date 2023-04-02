@@ -1,6 +1,6 @@
 import React from 'react';
 import { AxiosResponse } from 'axios';
-import { useState } from 'react';
+import { useState, MouseEventHandler } from 'react';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -12,17 +12,24 @@ import SearchIcon from '../../svgFile/symbol-defs.svg';
 import MapComponent from '../Map/Map';
 import s from './Search.module.css';
 
+interface IItemClinic {
+  item: IResItem;
+}
+
 const Search: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState<string>('cities');
   const [searchTextInput, setSearchTextInput] = useState<string>('');
   const [responseData, setResponseData] = useState<ISearchResponse | null>(
     null,
   );
+  const [aboutClinic, setAboutClinic] = useState<IItemClinic>();
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [isButtonClicked, setIsButtonClicked] = useState<string | null>(null);
 
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
     setSelectedValue(target.value);
-    console.log(target.value);
+    // console.log(target.value);
 
     if (searchTextInput) {
       dataApi
@@ -37,7 +44,7 @@ const Search: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTextInput(e.target.value);
-    console.log(e.target.value);
+    // console.log(e.target.value);
   };
 
   const formSubmit = (e: React.ChangeEvent<unknown>) => {
@@ -51,7 +58,16 @@ const Search: React.FC = () => {
       });
   };
 
-  console.log(responseData);
+  const onClinicClick = (item: IItemClinic, index: number) => {
+    setAboutClinic(item);
+    setActiveIndex(index);
+  };
+
+  const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setIsButtonClicked(e.currentTarget.id);
+  };
+  console.log(aboutClinic);
+  // console.log(responseData);
 
   return (
     <Section>
@@ -125,7 +141,15 @@ const Search: React.FC = () => {
               <ul>
                 {Array.isArray(responseData) &&
                   responseData.map((item, i) => (
-                    <li key={i} className={s.clinic_item}>
+                    <li
+                      key={i}
+                      className={`${s.clinic_item} ${
+                        activeIndex === i ? s.active : ''
+                      }`}
+                      onClick={() => {
+                        onClinicClick(item, i);
+                      }}
+                    >
                       <h4>{item.longName}</h4>
                       <p>{item.city}</p>
                       <p>{item.address}</p>
@@ -138,7 +162,35 @@ const Search: React.FC = () => {
           </div>
 
           <div>
-            <MapComponent />
+            <div className={s.map_button}>
+              <button
+                id="location"
+                type="button"
+                onClick={handleBtnClick}
+                className={
+                  isButtonClicked === 'location'
+                    ? `${s.button} ${s.active}`
+                    : s.button
+                }
+              >
+                Location
+              </button>
+              <button
+                id="about"
+                type="button"
+                className={
+                  isButtonClicked === 'about'
+                    ? `${s.button} ${s.active}`
+                    : s.button
+                }
+                onClick={handleBtnClick}
+              >
+                About Clinic
+              </button>
+            </div>
+            <div>
+              <MapComponent />
+            </div>
           </div>
         </div>
       </div>

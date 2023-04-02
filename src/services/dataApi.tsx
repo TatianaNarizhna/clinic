@@ -7,7 +7,7 @@ export const getSearchResult = async (value: string, search: string) => {
     const response = await axios.get<ISearchResponse>(
       `${BASE_URL}/clinics/${value}/${search}`,
     );
-    console.log(response);
+    // console.log(response);
     return response;
   } catch (error) {
     console.log(error);
