@@ -22,9 +22,11 @@ const Search: React.FC = () => {
   const [responseData, setResponseData] = useState<ISearchResponse | null>(
     null,
   );
-  const [aboutClinic, setAboutClinic] = useState<IItemClinic>();
+  const [aboutClinic, setAboutClinic] = useState<IResItem | undefined>();
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [isButtonClicked, setIsButtonClicked] = useState<string | null>(null);
+  const [activeButtonId, setActiveButtonId] = useState<string | null>(
+    'location',
+  );
 
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
@@ -58,16 +60,19 @@ const Search: React.FC = () => {
       });
   };
 
-  const onClinicClick = (item: IItemClinic, index: number) => {
+  const onClinicClick = (item: IResItem, index: number) => {
     setAboutClinic(item);
     setActiveIndex(index);
   };
 
   const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setIsButtonClicked(e.currentTarget.id);
+    setActiveButtonId(e.currentTarget.id);
+  };
+
+  const activeBtnColor = (bottonId: string) => {
+    return bottonId === activeButtonId ? `${s.button} ${s.active}` : s.button;
   };
   console.log(aboutClinic);
-  // console.log(responseData);
 
   return (
     <Section>
@@ -167,30 +172,39 @@ const Search: React.FC = () => {
                 id="location"
                 type="button"
                 onClick={handleBtnClick}
-                className={
-                  isButtonClicked === 'location'
-                    ? `${s.button} ${s.active}`
-                    : s.button
-                }
+                className={activeBtnColor('location')}
               >
                 Location
               </button>
               <button
                 id="about"
                 type="button"
-                className={
-                  isButtonClicked === 'about'
-                    ? `${s.button} ${s.active}`
-                    : s.button
-                }
+                className={activeBtnColor('about')}
                 onClick={handleBtnClick}
               >
                 About Clinic
               </button>
             </div>
-            <div>
-              <MapComponent />
-            </div>
+
+            {activeButtonId === 'about' && (
+              <div className={s.about_clinic}>
+                {aboutClinic && (
+                  <>
+                    <h4>{aboutClinic.longName}</h4>
+                    <p>{aboutClinic.suburb}</p>
+                    <p>{aboutClinic.state}</p>
+                    <p>{aboutClinic.email}</p>
+                    <p>{aboutClinic.about}</p>
+                  </>
+                )}
+              </div>
+            )}
+
+            {activeButtonId === 'location' && (
+              <div>
+                <MapComponent />
+              </div>
+            )}
           </div>
         </div>
       </div>

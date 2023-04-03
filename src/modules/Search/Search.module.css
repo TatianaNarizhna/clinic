@@ -45,3 +45,8 @@
     border: 1px solid var(--clinic-item-color);
 }
 
+.button.active {
+       background-color: var(--active-clinic);
+    border: 1px solid black; 
+}
+
