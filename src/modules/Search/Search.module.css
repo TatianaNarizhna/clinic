@@ -16,6 +16,7 @@
 }
 
 .input_cont {
+    position: relative;
     width: 40%;
 }
 
@@ -24,7 +25,7 @@
 }
 
 .form_control {
-    margin: 20px 0 20px 20px;
+    padding: 20px 0 20px 27px;
 }
 
 .no_results {
@@ -32,9 +33,15 @@
 }
 
 .clinic_item {
+    padding: 10px 20px;
     border: 1px solid var(--clinic-item-color);
     border-radius: 5px;
     background-color: rgb(231, 245, 241);
+}
+
+.clinic_list {
+  display: flex;
+  justify-content: space-between;
 }
 
 .clinic_item:not(:last-child) {
@@ -52,6 +59,7 @@
     border: 1px solid black;
 }
 
+
 .button {
     cursor: pointer;
     font-size: 25px;
@@ -59,6 +67,8 @@
     height: 80px;
     background-color: rgb(231, 245, 241);
     border: 1px solid var(--clinic-item-color);
+     border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 }
 
 .button.active {
@@ -78,6 +88,27 @@
     text-align: center;
 }
 
+/* about clinic */
+
+.about_title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.about_desc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.lambda {
+    position: absolute;
+    top: 80px;
+    right: 80px;
+}
+
 
 @media screen and (max-width: 1024px) {
     .search_res {
@@ -94,16 +125,50 @@
     }  
 
     .form_control {
-    padding: 10px 27px;
+    padding: 0 27px;
     }
 
     .button {
     cursor: pointer;
-    font-size: 25px;
+    font-size: 15px;
     width: 50%;
-    height: 50px;
+    height: 40px;
+}
 
+.about_clinic {
+    overflow: scroll;
+    height: 50vh;
+    padding: 20px;
+}
+
+.radio_btn {
+    width: 20px;
+    height: 20px;
+}
+
+.about_title {
+    margin-bottom: 5px;
+    font-size: 10px;
+}
+
+.about_desc {
+    margin-bottom: 20px;
+}
+
+.clinic_item {
+    padding: 5px 10px;
+}
+
+.clinic_list {
+  display: block;
+}
+
+
+.lambda {
+  display: none;
 }
 
 }
+
+
 

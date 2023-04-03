@@ -176,17 +176,27 @@ const Search: React.FC = () => {
                       }}
                     >
                       <h4>{item.longName}</h4>
-                      <p>{item.city}</p>
-                      <p>{item.address}</p>
-                      <p>{item.website}</p>
-                      <p>{item.phone}</p>
+                      <p>
+                        {item.city}, {item.address}
+                      </p>
+                      <div className={s.clinic_list}>
+                        <p>{item.website}</p>
+                        <p>p. {item.phone}</p>
+                      </div>
                     </li>
                   ))}
               </ul>
             )}
           </div>
 
-          <div>
+          <div className={s.lam_relative}>
+            <div className={s.lambda}>
+              <svg width={55} height={55}>
+                <use
+                  xlinkHref={`${SearchIcon}#icon-Orange-Lambda-2016022849`}
+                ></use>
+              </svg>
+            </div>
             <div className={s.map_button}>
               <button
                 id="location"
@@ -205,15 +215,20 @@ const Search: React.FC = () => {
                 About Clinic
               </button>
             </div>
-
             {activeButtonId === 'about' && (
               <div className={s.about_clinic}>
                 {aboutClinic ? (
                   <>
-                    <h4>{aboutClinic.longName}</h4>
-                    <p>{aboutClinic.suburb}</p>
-                    <p>{aboutClinic.state}</p>
-                    <p>{aboutClinic.email}</p>
+                    <h4 className={s.about_title}>{aboutClinic.longName}</h4>
+                    <div className={s.about_desc}>
+                      <div>
+                        <p>{aboutClinic.suburb}</p>
+                        <p>{aboutClinic.state}</p>
+                      </div>
+                      <div>
+                        <p>{aboutClinic.email}</p>
+                      </div>
+                    </div>
                     <p>{aboutClinic.about}</p>
                   </>
                 ) : (
@@ -221,7 +236,6 @@ const Search: React.FC = () => {
                 )}
               </div>
             )}
-
             {activeButtonId === 'location' && (
               <div>
                 <MapComponent />
