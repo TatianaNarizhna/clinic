@@ -5,6 +5,8 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 import { ISearchResponse, IResItem } from '../../types/searchTypes';
 import * as dataApi from '../../services/dataApi';
 import Section from '../Section/Section';
@@ -76,27 +78,39 @@ const Search: React.FC = () => {
 
   return (
     <Section>
-      <div>
+      <div className={s.media}>
         <form onSubmit={formSubmit}>
           <div className={s.form_container}>
             <div className={s.input_container}>
               {' '}
               <div className={s.svg_container}>
-                <svg width={22} height={22}>
+                <svg width={22} height={22} fill="gray">
                   <use xlinkHref={`${SearchIcon}#icon-search`}></use>
                 </svg>
               </div>{' '}
-              <input
+              {/* <input
                 className={s.input}
                 type="search"
                 name="search"
                 placeholder="Enter keyword..."
                 value={searchTextInput}
                 onChange={handleInputChange}
-              />
+              /> */}
+              <div className={s.input_cont}>
+                <TextField
+                  className={s.input}
+                  id="outlined-basic"
+                  label="Enter your request"
+                  variant="outlined"
+                  value={searchTextInput}
+                  onChange={handleInputChange}
+                  type="search"
+                  name="search"
+                />
+              </div>
             </div>
 
-            <FormControl>
+            <FormControl className={s.form_control}>
               <RadioGroup
                 row
                 aria-labelledby="demo-row-radio-buttons-group-label"
@@ -132,6 +146,12 @@ const Search: React.FC = () => {
                   label="Suburb"
                   onChange={handleRadioChange}
                 />
+                <FormControlLabel
+                  value="nearest"
+                  control={<Radio />}
+                  label="Nearby"
+                  onChange={handleRadioChange}
+                />
               </RadioGroup>
             </FormControl>
           </div>
@@ -141,7 +161,7 @@ const Search: React.FC = () => {
           <div>
             {' '}
             {responseData === null ? (
-              <p>No results, please try again</p>
+              <h4 className={s.no_results}>No results, please try again</h4>
             ) : (
               <ul>
                 {Array.isArray(responseData) &&
@@ -188,7 +208,7 @@ const Search: React.FC = () => {
 
             {activeButtonId === 'about' && (
               <div className={s.about_clinic}>
-                {aboutClinic && (
+                {aboutClinic ? (
                   <>
                     <h4>{aboutClinic.longName}</h4>
                     <p>{aboutClinic.suburb}</p>
@@ -196,6 +216,8 @@ const Search: React.FC = () => {
                     <p>{aboutClinic.email}</p>
                     <p>{aboutClinic.about}</p>
                   </>
+                ) : (
+                  <h3 className={s.select_clinic}>Please, select a clinic!</h3>
                 )}
               </div>
             )}

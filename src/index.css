@@ -2,11 +2,15 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+font-family: 'Carter One', cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: url('./svgFile/flag2.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: top top;
+ background-size: cover;
+  
 }
 
 code {
