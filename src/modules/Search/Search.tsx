@@ -13,6 +13,7 @@ import Section from '../Section/Section';
 import SearchIcon from '../../svgFile/symbol-defs.svg';
 import MapComponent from '../Map/Map';
 import s from './Search.module.css';
+import { arrayBuffer } from 'stream/consumers';
 
 interface IItemClinic {
   item: IResItem;
@@ -38,6 +39,15 @@ const Search: React.FC = () => {
     [],
   );
 
+  const getCoordinates = (arr: any) => {
+    arr.map((item: any) =>
+      setCoordinates(prevState => [
+        ...(prevState ?? []),
+        { latitude: item.latitude, longitude: item.longitude },
+      ]),
+    );
+  };
+
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
     setSelectedValue(target.value);
@@ -49,9 +59,8 @@ const Search: React.FC = () => {
         .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
           if (res) {
             setResponseData(res.data);
-            setCoordinates([
-              { latitude: res.data.latitude, longitude: res.data.longitude },
-            ]);
+
+            getCoordinates(res.data);
           }
         });
     }
@@ -59,7 +68,6 @@ const Search: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTextInput(e.target.value);
-    // console.log(e.target.value);
   };
 
   const formSubmit = (e: React.ChangeEvent<unknown>) => {
@@ -69,17 +77,12 @@ const Search: React.FC = () => {
       .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
         if (res) {
           setResponseData(res.data);
-          setCoordinates([
-            {
-              latitude: res.data.latitude,
-              longitude: res.data.longitude,
-            },
-          ]);
+          getCoordinates(res.data);
         }
       });
   };
 
-  console.log(responseData);
+  // console.log(coordinates);
 
   const onClinicClick = (item: IResItem, index: number) => {
     setAboutClinic(item);
@@ -93,7 +96,7 @@ const Search: React.FC = () => {
   const activeBtnColor = (bottonId: string) => {
     return bottonId === activeButtonId ? `${s.button} ${s.active}` : s.button;
   };
-  console.log(aboutClinic);
+  // console.log(aboutClinic);
 
   return (
     <Section>
@@ -107,14 +110,6 @@ const Search: React.FC = () => {
                   <use xlinkHref={`${SearchIcon}#icon-search`}></use>
                 </svg>
               </div>{' '}
-              {/* <input
-                className={s.input}
-                type="search"
-                name="search"
-                placeholder="Enter keyword..."
-                value={searchTextInput}
-                onChange={handleInputChange}
-              /> */}
               <div className={s.input_cont}>
                 <TextField
                   className={s.input}
