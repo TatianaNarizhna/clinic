@@ -18,6 +18,11 @@ interface IItemClinic {
   item: IResItem;
 }
 
+interface ICoordinates {
+  latitude: number;
+  longitude: number;
+}
+
 const Search: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState<string>('cities');
   const [searchTextInput, setSearchTextInput] = useState<string>('');
@@ -28,6 +33,9 @@ const Search: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(-1);
   const [activeButtonId, setActiveButtonId] = useState<string | null>(
     'location',
+  );
+  const [coordinates, setCoordinates] = useState<ICoordinates[] | undefined>(
+    [],
   );
 
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
@@ -41,6 +49,9 @@ const Search: React.FC = () => {
         .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
           if (res) {
             setResponseData(res.data);
+            setCoordinates([
+              { latitude: res.data.latitude, longitude: res.data.longitude },
+            ]);
           }
         });
     }
@@ -58,9 +69,17 @@ const Search: React.FC = () => {
       .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
         if (res) {
           setResponseData(res.data);
+          setCoordinates([
+            {
+              latitude: res.data.latitude,
+              longitude: res.data.longitude,
+            },
+          ]);
         }
       });
   };
+
+  console.log(responseData);
 
   const onClinicClick = (item: IResItem, index: number) => {
     setAboutClinic(item);
@@ -238,7 +257,7 @@ const Search: React.FC = () => {
             )}
             {activeButtonId === 'location' && (
               <div>
-                <MapComponent />
+                <MapComponent coordinates={coordinates} dataRes={aboutClinic} />
               </div>
             )}
           </div>

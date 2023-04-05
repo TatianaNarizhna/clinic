@@ -1,4 +1,4 @@
-export type IResItem = {
+export interface IResItem {
   longName: string;
   registration: string;
   psm: string;
@@ -25,8 +25,12 @@ export type IResItem = {
   nearby4: string;
   nearby4Link: string;
   about: string;
-};
+  latitude: number;
+  longitude: number;
+}
 
-export type ISearchResponse = {
+export interface ISearchResponse {
+  latitude: number;
+  longitude: number;
   data: IResItem[];
-};
+}

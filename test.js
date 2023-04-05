@@ -2,115 +2,124 @@
 // import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 // import s from './Map.module.css';
 
-// const Map = ({ clinics }) => {
+// const Map = ({ markers }) => {
 //   const center = useMemo(() => ({ lat: -24, lng: 134 }), []);
 
 //   return (
 //     <GoogleMap zoom={4} center={center} mapContainerClassName={s.map_container}>
-//       {clinics.map(clinic => (
-//         <Marker
-//           key={clinic.id}
-//           position={{ lat: clinic.lat, lng: clinic.lng }}
-//         />
+//       {markers.map((marker, index) => (
+//         <Marker key={index} position={{ lat: marker.lat, lng: marker.lng }} />
 //       ))}
 //     </GoogleMap>
 //   );
 // };
 
-// const MapComponent = ({ clinics }) => {
+// const MapComponent = () => {
 //   const { isLoaded } = useLoadScript({
-//     googleMapsApiKey: 'YOUR_API_KEY_HERE',
+//     googleMapsApiKey: 'YOUR_API_KEY',
 //   });
+
+//   const markers = [
+//     { lat: -24, lng: 134 },
+//     { lat: -30, lng: 140 },
+//     { lat: -20, lng: 130 },
+//   ];
 
 //   if (!isLoaded) {
 //     return <p>Loading...</p>;
 //   }
 
-//   return <Map clinics={clinics} />;
+//   return <Map markers={markers} />;
 // };
 
 // export default MapComponent;
 
-// <div className={s.search_res}>
-//   <div>
-//     {responseData === null ? (
-//       <p>No results, please try again</p>
-//     ) : (
-//       <ul>
-//         {Array.isArray(responseData) &&
-//           responseData.map((item, i) => (
-//             <li key={i} className={s.clinic_item}>
-//               <h4>{item.longName}</h4>
-//               <p>{item.city}</p>
-//               <p>{item.address}</p>
-//               <p>{item.website}</p>
-//               <p>{item.phone}</p>
-//             </li>
-//           ))}
-//       </ul>
-//     )}
-//   </div>
-
-//   <div>
-//     <MapComponent clinics={responseData} />
-//   </div>
-// </div>;
-
-// ------------------------no lan lng
-// import { useMemo, useState, useEffect } from 'react';
+// -----------selected
+// import { useState, useMemo } from 'react';
 // import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 // import s from './Map.module.css';
 
-// const Map = ({ clinics }) => {
+// const Map = ({ markers, selectedLat }) => {
 //   const center = useMemo(() => ({ lat: -24, lng: 134 }), []);
+//   const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(null);
+
+//   const handleMarkerClick = index => {
+//     setSelectedMarkerIndex(index);
+//   };
 
 //   return (
 //     <GoogleMap zoom={4} center={center} mapContainerClassName={s.map_container}>
-//       {clinics.map(clinic => (
+//       {markers.map((marker, index) => (
 //         <Marker
-//           key={clinic.id}
-//           position={{ lat: clinic.lat, lng: clinic.lng }}
+//           key={index}
+//           position={{ lat: marker.lat, lng: marker.lng }}
+//           icon={{
+//             url:
+//               selectedLat && marker.lat === selectedLat
+//                 ? 'selected-marker.png' // path to selected marker icon
+//                 : 'marker.png', // path to default marker icon
+//             scaledSize: new window.google.maps.Size(50, 50),
+//           }}
+//           onClick={() => handleMarkerClick(index)}
 //         />
 //       ))}
 //     </GoogleMap>
 //   );
 // };
 
-// const MapComponent = ({ clinics }) => {
-//   const [coordinates, setCoordinates] = useState([]);
-
+// const MapComponent = () => {
 //   const { isLoaded } = useLoadScript({
-//     googleMapsApiKey: 'YOUR_API_KEY_HERE',
+//     googleMapsApiKey: 'YOUR_API_KEY',
 //   });
 
-//   useEffect(() => {
-//     const geocoder = new window.google.maps.Geocoder();
-
-//     const getCoordinates = async () => {
-//       const coordinates = [];
-
-//       for (const clinic of clinics) {
-//         const { results } = await geocoder.geocode({ address: clinic.address });
-
-//         if (results.length > 0) {
-//           const { lat, lng } = results[0].geometry.location;
-//           coordinates.push({ id: clinic.id, lat, lng });
-//         }
-//       }
-
-//       setCoordinates(coordinates);
-//     };
-
-//     if (isLoaded) {
-//       getCoordinates();
-//     }
-//   }, [isLoaded, clinics]);
+//   const [selectedLat, setSelectedLat] = useState(null);
+//   const markers = [
+//     { lat: -24, lng: 134 },
+//     { lat: -30, lng: 140 },
+//     { lat: -20, lng: 130 },
+//   ];
 
 //   if (!isLoaded) {
 //     return <p>Loading...</p>;
 //   }
 
-//   return <Map clinics={coordinates} />;
+//   return (
+//     <div>
+//       <Map markers={markers} selectedLat={selectedLat} />
+//       <ul>
+//         {markers.map((marker, index) => (
+//           <li key={index} onClick={() => setSelectedLat(marker.lat)}>
+//             {marker.lat}
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
 // };
 
 // export default MapComponent;
+
+// -----
+// <div className="main-map-info-block-map">
+//     {infoAboutClinic?.lng ? (
+//       <div>
+//         <Map
+//           defaultZoom={18}
+//           defaultCenter={{
+//             lat: infoAboutClinic?.lat,
+//             lng: infoAboutClinic?.lng,
+//           }}
+//           markers={data}
+//         />
+//       </div>
+//     ) : (
+//       <div>
+//         <Map
+//           defaultZoom={4}
+//           defaultCenter={{
+//             lat: -25.48796477368385,
+//             lng: 134.1424367952019,
+//           }}
+//           markers={data}
+//         />
+//       </div>
