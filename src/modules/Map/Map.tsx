@@ -1,5 +1,5 @@
 import React from 'react';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import { IResItem } from '../../types/searchTypes';
 import markerGreen from './markerGreen.png';
@@ -15,30 +15,16 @@ interface IMyComponentProps {
   dataRes: IResItem | undefined;
 }
 
+interface IMarker {
+  latitude: number;
+  longitude: number;
+}
+
 const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
   const [mapOptions, setMapOptions] = useState({
     center: { lat: -24, lng: 134 },
     zoom: 4,
   });
-
-  const [markers, setMarkers] = useState(coordinates);
-
-  useEffect(() => {
-    window.localStorage.setItem('markers', JSON.stringify(coordinates));
-  }, [coordinates]);
-
-  useEffect(() => {
-    const storedMarkers = window.localStorage.getItem('markers');
-    console.log('rrr');
-
-    if (storedMarkers) {
-      const parsedMarkers = JSON.parse(storedMarkers);
-      // console.log(parsedMarkers);
-      setMarkers(parsedMarkers);
-    }
-  }, []);
-
-  console.log(markers);
 
   useEffect(() => {
     if (dataRes) {
@@ -67,8 +53,9 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
       center={mapOptions.center}
       mapContainerClassName={s.map_container}
     >
-      {markers &&
-        markers.map((marker, i) => (
+      {coordinates &&
+        coordinates.length > 0 &&
+        coordinates.map((marker, i) => (
           <Marker
             key={i}
             position={{ lat: marker.latitude, lng: marker.longitude }}
@@ -79,7 +66,7 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
                     url: markerGreen,
                     scaledSize: new window.google.maps.Size(70, 70),
                   }
-                : undefined
+                : ''
             }
           />
         ))}
@@ -103,33 +90,3 @@ const MapComponent: React.FC<IMyComponentProps> = ({
 };
 
 export default MapComponent;
-
-// const center = useMemo(
-//   () => ({ lat: dataRes?.latitude || -24, lng: dataRes?.longitude || 134 }),
-//   [dataRes],
-// );
-// const [mapOptions, setMapOptions] = useState({
-//   center,
-//   zoom: 4,
-// });
-
-// useEffect(() => {
-//   if (dataRes) {
-//     setMapOptions({
-//       center,
-//       zoom: 10,
-//     });
-//   }
-// }, [dataRes, coordinates]);
-
-// useEffect(() => {
-//   if (coordinates) {
-//     setMapOptions({
-//       center: () => ({
-//         lat: coordinates[0].latitude,
-//         lng: coordinates[0].longitude,
-//       }),
-//       zoom: 8,
-//     });
-//   }
-// }, [coordinates]);

@@ -250,7 +250,11 @@ const Search: React.FC = () => {
                 )}
               </div>
             )}
-            {activeButtonId === 'location' && (
+            {activeButtonId === 'location' ? (
+              <div>
+                <MapComponent coordinates={coordinates} dataRes={aboutClinic} />
+              </div>
+            ) : (
               <div>
                 <MapComponent coordinates={coordinates} dataRes={aboutClinic} />
               </div>
