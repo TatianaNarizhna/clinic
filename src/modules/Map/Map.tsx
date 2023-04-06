@@ -42,7 +42,7 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
           lat: coordinates[0].latitude,
           lng: coordinates[0].longitude,
         },
-        zoom: 9,
+        zoom: 7,
       });
     }
   }, [coordinates]);

@@ -1,11 +1,10 @@
 import React from 'react';
 import { AxiosResponse } from 'axios';
-import { useState, MouseEventHandler } from 'react';
+import { useState } from 'react';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { ISearchResponse, IResItem } from '../../types/searchTypes';
 import * as dataApi from '../../services/dataApi';
@@ -13,11 +12,6 @@ import Section from '../Section/Section';
 import SearchIcon from '../../svgFile/symbol-defs.svg';
 import MapComponent from '../Map/Map';
 import s from './Search.module.css';
-import { arrayBuffer } from 'stream/consumers';
-
-interface IItemClinic {
-  item: IResItem;
-}
 
 interface ICoordinates {
   latitude: number;
