@@ -1,6 +1,8 @@
+
 .form_container {
     display: flex;
     flex-direction: column; 
+ 
 }
 
 .svg_container {
@@ -21,12 +23,15 @@
 }
 
 .input {
+
     width: 100%;
 }
 
 .form_control {
     padding: 20px 0 20px 27px;
 }
+
+
 
 .no_results {
     text-align: center;
@@ -52,6 +57,12 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 50px; 
+
+}
+
+.overFlow {
+  max-height: 80vh; 
+  overflow-y: auto;
 }
 
 .active {
@@ -96,6 +107,8 @@
     font-size: 20px;
 }
 
+
+
 .about_desc {
     display: flex;
     justify-content: space-between;
@@ -136,7 +149,7 @@
 }
 
 .about_clinic {
-    overflow: scroll;
+    /* overflow: auto; */
     height: 50vh;
     padding: 20px;
 }

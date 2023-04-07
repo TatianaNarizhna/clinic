@@ -1,6 +1,6 @@
 import React from 'react';
 import { AxiosResponse } from 'axios';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -19,8 +19,12 @@ interface ICoordinates {
 }
 
 const Search: React.FC = () => {
-  const [selectedValue, setSelectedValue] = useState<string>('cities');
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(
+    'cities',
+  );
+  const [activeRadio, setActiveRadio] = useState(false);
   const [searchTextInput, setSearchTextInput] = useState<string>('');
+  const [isActiveSvg, setIsActiveSvg] = useState(false);
   const [responseData, setResponseData] = useState<ISearchResponse | null>(
     null,
   );
@@ -33,50 +37,81 @@ const Search: React.FC = () => {
     [],
   );
 
+  const inputRef = useRef<any>(null);
+
   const getCoordinates = (arr: any) => {
-    arr.map((item: any) =>
-      setCoordinates(prevState => [
-        ...(prevState ?? []),
-        { latitude: item.latitude, longitude: item.longitude },
-      ]),
-    );
+    if (!arr || arr.length === 0) {
+      setCoordinates([]);
+      // setSelectedValue(undefined);
+    } else {
+      arr.map((item: any) =>
+        setCoordinates(prevState => [
+          ...(prevState ?? []),
+          { latitude: item.latitude, longitude: item.longitude },
+        ]),
+      );
+    }
   };
 
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
+
     setSelectedValue(target.value);
-    // console.log(target.value);
+    setCoordinates([]);
+    setActiveRadio(true);
 
     if (searchTextInput) {
       dataApi
         .getSearchResult(target.value, searchTextInput)
         .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
-          if (res) {
+          if (res && res.data.length > 0) {
             setResponseData(res.data);
-
             getCoordinates(res.data);
+            // setActiveRadio(true);
           }
         });
     }
   };
 
+  const handleSvgClick = () => {
+    setIsActiveSvg(true);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  const handleInputBlur = () => {
+    setIsActiveSvg(false);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTextInput(e.target.value);
+    // setActiveRadio(true);
   };
+
+  console.log(activeRadio);
 
   const formSubmit = (e: React.ChangeEvent<unknown>) => {
     e.preventDefault();
-    dataApi
-      .getSearchResult(selectedValue, searchTextInput)
-      .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
-        if (res) {
-          setResponseData(res.data);
-          getCoordinates(res.data);
-        }
-      });
-  };
+    setCoordinates([]);
+    // setActiveRadio(true);
 
-  // console.log(coordinates);
+    if (selectedValue !== undefined && activeRadio) {
+      dataApi
+        .getSearchResult(selectedValue, searchTextInput)
+        .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
+          if (res) {
+            setResponseData(res.data);
+            getCoordinates(res.data);
+
+            // console.log(res.data);
+          }
+          if (res?.data.length === 0) {
+            getCoordinates(null);
+          }
+        });
+    }
+  };
 
   const onClinicClick = (item: IResItem, index: number) => {
     setAboutClinic(item);
@@ -90,6 +125,7 @@ const Search: React.FC = () => {
   const activeBtnColor = (bottonId: string) => {
     return bottonId === activeButtonId ? `${s.button} ${s.active}` : s.button;
   };
+
   // console.log(aboutClinic);
 
   return (
@@ -97,10 +133,14 @@ const Search: React.FC = () => {
       <div className={s.media}>
         <form onSubmit={formSubmit}>
           <div className={s.form_container}>
-            <div className={s.input_container}>
+            <div className={s.input_container} onClick={handleSvgClick}>
               {' '}
               <div className={s.svg_container}>
-                <svg width={22} height={22} fill="gray">
+                <svg
+                  width={22}
+                  height={22}
+                  fill={isActiveSvg ? 'DarkTurquoise' : 'gray'}
+                >
                   <use xlinkHref={`${SearchIcon}#icon-search`}></use>
                 </svg>
               </div>{' '}
@@ -114,6 +154,8 @@ const Search: React.FC = () => {
                   onChange={handleInputChange}
                   type="search"
                   name="search"
+                  onBlur={handleInputBlur}
+                  inputRef={inputRef}
                 />
               </div>
             </div>
@@ -168,32 +210,37 @@ const Search: React.FC = () => {
         <div className={s.search_res}>
           <div>
             {' '}
-            {responseData === null ? (
+            {responseData === null ||
+            !Array.isArray(responseData) ||
+            responseData.length === 0 ? (
               <h4 className={s.no_results}>No results, please try again</h4>
             ) : (
-              <ul>
-                {Array.isArray(responseData) &&
-                  responseData.map((item, i) => (
-                    <li
-                      key={i}
-                      className={`${s.clinic_item} ${
-                        activeIndex === i ? s.active : ''
-                      }`}
-                      onClick={() => {
-                        onClinicClick(item, i);
-                      }}
-                    >
-                      <h4>{item.longName}</h4>
-                      <p>
-                        {item.city}, {item.address}
-                      </p>
-                      <div className={s.clinic_list}>
-                        <p>{item.website}</p>
-                        <p>p. {item.phone}</p>
-                      </div>
-                    </li>
-                  ))}
-              </ul>
+              <div className={s.over}>
+                {' '}
+                <ul className={s.overFlow}>
+                  {Array.isArray(responseData) &&
+                    responseData.map((item, i) => (
+                      <li
+                        key={i}
+                        className={`${s.clinic_item} ${
+                          activeIndex === i ? s.active : ''
+                        }`}
+                        onClick={() => {
+                          onClinicClick(item, i);
+                        }}
+                      >
+                        <h4>{item.longName}</h4>
+                        <p>
+                          {item.city}, {item.address}
+                        </p>
+                        <div className={s.clinic_list}>
+                          <p>{item.website}</p>
+                          <p>p. {item.phone}</p>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              </div>
             )}
           </div>
 

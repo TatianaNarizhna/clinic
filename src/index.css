@@ -10,7 +10,8 @@ font-family: 'Carter One', cursive;
   background-attachment: fixed;
   background-position: top top;
  background-size: cover;
-  
+ overflow: hidden;
+
 }
 
 code {
@@ -51,4 +52,10 @@ ul {
   --clinic-item-color: rgb(194, 182, 182);
   --clinic-item-bckg: rgb(231, 245, 241);
   --active-clinic: rgb(65, 145, 112);
+}
+
+@media screen and (max-width: 1024px) {
+  body {
+    overflow: auto;
+  }
 }

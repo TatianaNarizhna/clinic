@@ -30,6 +30,7 @@ export interface IResItem {
 }
 
 export interface ISearchResponse {
+  length: number;
   latitude: number;
   longitude: number;
   data: IResItem[];
