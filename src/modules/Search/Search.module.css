@@ -13,18 +13,27 @@
 }
 
 .input_container {
+    width: 50%;
     display: flex;
   
 }
 
 .input_cont {
     position: relative;
-    width: 40%;
+    width: 65%;
 }
 
 .input {
-
     width: 100%;
+}
+
+input {
+    cursor: pointer;
+}
+
+::-webkit-clear-button {
+
+  cursor: pointer; /* Зробити курсор миші pointer */
 }
 
 .form_control {
@@ -32,6 +41,15 @@
 }
 
 
+.button_search {
+    padding: 0 40px;
+    margin-left: auto;
+    margin-right: 30px;
+    cursor: pointer;
+    background-color: var( --clinic-item-bckg);
+    border: 1px solid var(--clinic-item-color);
+    border-radius: 3px;
+}
 
 .no_results {
     text-align: center;
@@ -61,7 +79,7 @@
 }
 
 .overFlow {
-  max-height: 80vh; 
+  max-height: 73.5vh; 
   overflow-y: auto;
 }
 
@@ -69,7 +87,6 @@
     background-color: var(--active-clinic);
     border: 1px solid black;
 }
-
 
 .button {
     cursor: pointer;
@@ -106,8 +123,6 @@
     margin-bottom: 20px;
     font-size: 20px;
 }
-
-
 
 .about_desc {
     display: flex;
@@ -176,9 +191,19 @@
   display: block;
 }
 
-
 .lambda {
   display: none;
+}
+
+.input_container {
+    width: 100%;
+    display: flex;
+}
+
+.button_search {
+    padding: 0 5px;
+    margin: 0 0 0 5px;
+
 }
 
 }

@@ -56,6 +56,12 @@ const Search: React.FC = () => {
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
 
+    const queryString = `?search=${encodeURIComponent(
+      searchTextInput,
+    )}&type=${selectedValue}`;
+
+    window.history.pushState(null, '', queryString);
+
     setSelectedValue(target.value);
     setCoordinates([]);
     setActiveRadio(true);
@@ -94,7 +100,12 @@ const Search: React.FC = () => {
   const formSubmit = (e: React.ChangeEvent<unknown>) => {
     e.preventDefault();
     setCoordinates([]);
-    // setActiveRadio(true);
+
+    const queryString = `?search=${encodeURIComponent(
+      searchTextInput,
+    )}&type=${selectedValue}`;
+
+    window.history.pushState(null, '', queryString);
 
     if (selectedValue !== undefined && activeRadio) {
       dataApi
@@ -158,6 +169,9 @@ const Search: React.FC = () => {
                   inputRef={inputRef}
                 />
               </div>
+              <button className={s.button_search} type="submit">
+                Search
+              </button>
             </div>
 
             <FormControl className={s.form_control}>
