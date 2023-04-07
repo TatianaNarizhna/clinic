@@ -56,9 +56,9 @@ const Search: React.FC = () => {
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
 
-    const queryString = `?search=${encodeURIComponent(
+    const queryString = `/clinics/${selectedValue}/${encodeURIComponent(
       searchTextInput,
-    )}&type=${selectedValue}`;
+    )}`;
 
     window.history.pushState(null, '', queryString);
 
