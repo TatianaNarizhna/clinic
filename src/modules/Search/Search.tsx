@@ -39,6 +39,26 @@ const Search: React.FC = () => {
 
   const inputRef = useRef<any>(null);
 
+  const handleCopy = (e: ClipboardEvent) => {
+    const queryString = `?search=${encodeURIComponent(
+      searchTextInput,
+    )}&type=${selectedValue}`;
+
+    const url = `${window.location.origin}${window.location.pathname}${queryString}`;
+
+    const newWindow = window.open(url, '_blank');
+    if (newWindow) {
+      newWindow.focus();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('copy', handleCopy as EventListener);
+    return () => {
+      window.removeEventListener('copy', handleCopy as EventListener);
+    };
+  }, []);
+
   const getCoordinates = (arr: any) => {
     if (!arr || arr.length === 0) {
       setCoordinates([]);
@@ -56,11 +76,11 @@ const Search: React.FC = () => {
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
 
-    const queryString = `/clinics/${selectedValue}/${encodeURIComponent(
-      searchTextInput,
-    )}`;
+    // const queryString = `/clinics/${selectedValue}/${encodeURIComponent(
+    //   searchTextInput,
+    // )}`;
 
-    window.history.pushState(null, '', queryString);
+    // window.history.pushState(null, '', queryString);
 
     setSelectedValue(target.value);
     setCoordinates([]);
@@ -101,11 +121,11 @@ const Search: React.FC = () => {
     e.preventDefault();
     setCoordinates([]);
 
-    const queryString = `?search=${encodeURIComponent(
-      searchTextInput,
-    )}&type=${selectedValue}`;
+    // const queryString = `?search=${encodeURIComponent(
+    //   searchTextInput,
+    // )}&type=${selectedValue}`;
 
-    window.history.pushState(null, '', queryString);
+    // window.history.pushState(null, '', queryString);
 
     if (selectedValue !== undefined && activeRadio) {
       dataApi
