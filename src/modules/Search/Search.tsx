@@ -121,11 +121,11 @@ const Search: React.FC = () => {
     e.preventDefault();
     setCoordinates([]);
 
-    // const queryString = `?search=${encodeURIComponent(
-    //   searchTextInput,
-    // )}&type=${selectedValue}`;
+    const queryString = `?search=${encodeURIComponent(
+      searchTextInput,
+    )}&type=${selectedValue}`;
 
-    // window.history.pushState(null, '', queryString);
+    window.history.pushState(null, '', queryString);
 
     if (selectedValue !== undefined && activeRadio) {
       dataApi
