@@ -68,8 +68,8 @@ const Search: React.FC = () => {
       searchParams.append('target', targetValue);
       searchParams.append('query', searchInputValue);
 
-      const url = `https://clinic-gamma.vercel.app/search?${searchParams.toString()}`;
-      window.open(url, '_blank');
+      const newUrl = `https://clinic-gamma.vercel.app/search?${searchParams.toString()}`;
+      window.history.pushState({}, '', newUrl);
 
       dataApi
         .getSearchResult(targetValue, searchInputValue)
