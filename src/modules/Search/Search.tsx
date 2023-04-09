@@ -12,7 +12,6 @@ import Section from '../Section/Section';
 import SearchIcon from '../../svgFile/symbol-defs.svg';
 import MapComponent from '../Map/Map';
 import s from './Search.module.css';
-import { ChildProcess } from 'child_process';
 
 interface ICoordinates {
   latitude: number;
@@ -24,9 +23,6 @@ const Search: React.FC = () => {
   const [activeRadio, setActiveRadio] = useState(false);
   const [searchTextInput, setSearchTextInput] = useState<string>('');
   const [isActiveSvg, setIsActiveSvg] = useState(false);
-  const [responseData, setResponseData] = useState<ISearchResponse | null>(
-    null,
-  );
   const [aboutClinic, setAboutClinic] = useState<IResItem | undefined>();
   const [activeIndex, setActiveIndex] = useState(-1);
   const [activeButtonId, setActiveButtonId] = useState<string | null>(
@@ -35,7 +31,6 @@ const Search: React.FC = () => {
   const [coordinates, setCoordinates] = useState<ICoordinates[] | undefined>(
     [],
   );
-
   const [city, setCity] = useState<ISearchResponse | null>(null);
   const [state, setState] = useState<ISearchResponse | null>(null);
   const [post, setPost] = useState<ISearchResponse | null>(null);
@@ -43,6 +38,8 @@ const Search: React.FC = () => {
   const [suburb, setSuburb] = useState<ISearchResponse | null>(null);
   const [nearby, setNearby] = useState<ISearchResponse | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [target, setTarget] = useState('');
+  const [query, setQuery] = useState('');
 
   const inputRef = useRef<any>(null);
 
@@ -68,8 +65,17 @@ const Search: React.FC = () => {
       searchParams.append('target', targetValue);
       searchParams.append('query', searchInputValue);
 
-      const newUrl = `https://clinic-gamma.vercel.app/search?${searchParams.toString()}`;
+      const newUrl = `/search?${searchParams.toString()}`;
       window.history.pushState({}, '', newUrl);
+
+      const target = searchParams.get('target');
+      const query = searchParams.get('query');
+      if (target) {
+        setTarget(target);
+      }
+      if (query) {
+        setQuery(query);
+      }
 
       dataApi
         .getSearchResult(targetValue, searchInputValue)
@@ -84,27 +90,26 @@ const Search: React.FC = () => {
             switch (targetValue) {
               case 'cities':
                 setCity(res.data);
-
                 break;
+
               case 'states':
                 setState(res.data);
-
                 break;
+
               case 'postcodes':
                 setPost(res.data);
-
                 break;
+
               case 'names':
                 setName(res.data);
-
                 break;
+
               case 'suburbs':
                 setSuburb(res.data);
-
                 break;
+
               case 'nearest':
                 setNearby(res.data);
-
                 break;
 
               default:
@@ -115,8 +120,6 @@ const Search: React.FC = () => {
     },
     [getCoordinates, hasSearched],
   );
-
-  console.log(hasSearched);
 
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
@@ -161,13 +164,10 @@ const Search: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTextInput(e.target.value);
     setHasSearched(false);
-
-    // setActiveRadio(true);
   };
 
   const formSubmit = (e: React.ChangeEvent<unknown>) => {
     e.preventDefault();
-    // setCoordinates([]);
 
     if (hasSearched) {
       return;
@@ -203,7 +203,27 @@ const Search: React.FC = () => {
     return bottonId === activeButtonId ? `${s.button} ${s.active}` : s.button;
   };
 
-  // console.log(aboutClinic);
+  console.log(target);
+  console.log(query);
+
+  // useEffect(() => {
+  //   const searchParams = new URLSearchParams();
+  //   const target = searchParams.get('target');
+  //   console.log('targ', target);
+  //   const query = searchParams.get('query');
+  //   if (target && query) {
+  //     handleSearch(target, query);
+  //   }
+  // }, [handleSearch, query, target]);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasSearchParams =
+      urlParams.get('target') !== null || urlParams.get('query') !== null;
+    if (hasSearchParams) {
+      window.history.replaceState({}, '', '/search');
+    }
+  }, []);
 
   return (
     <Section>
