@@ -399,3 +399,61 @@
 //       <button type="submit" disabled={disableSubmit}>Search</button>
 //     </form>
 //   );
+
+// ---------------------------------------
+// const [searchedAddresses, setSearchedAddresses] = useState<{ [key: string]: boolean }>({});
+
+// const handleSearch = useCallback(
+//   (targetValue: string, searchInputValue: string) => {
+//     if (searchedAddresses[searchInputValue]) {
+//       return;
+//     }
+//     dataApi
+//       .getSearchResult(targetValue, searchInputValue)
+//       .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
+//         if (res?.data.length === 0) {
+//           getCoordinates(null);
+//           return;
+//         }
+//         if (res && res.data.length > 0 && searchInputValue) {
+//           getCoordinates(res.data);
+
+//           switch (targetValue) {
+//             case 'cities':
+//               setCity(res.data);
+//               setSearchResult(res.data);
+//               break;
+//             case 'states':
+//               setState(res.data);
+//               setSearchResult(res.data);
+//               break;
+//             case 'postcodes':
+//               setPost(res.data);
+//               setSearchResult(res.data);
+//               break;
+//             case 'names':
+//               setName(res.data);
+//               setSearchResult(res.data);
+//               break;
+//             case 'suburbs':
+//               setSuburb(res.data);
+//               setSearchResult(res.data);
+//               break;
+//             case 'nearest':
+//               setNearby(res.data);
+//               setSearchResult(res.data);
+//               break;
+
+//             default:
+//               break;
+//           }
+
+//           setSearchedAddresses((prev) => ({
+//             ...prev,
+//             [searchInputValue]: true,
+//           }));
+//         }
+//       });
+//   },
+//   [getCoordinates, searchedAddresses],
+// );

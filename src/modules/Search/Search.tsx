@@ -12,6 +12,7 @@ import Section from '../Section/Section';
 import SearchIcon from '../../svgFile/symbol-defs.svg';
 import MapComponent from '../Map/Map';
 import s from './Search.module.css';
+import { ChildProcess } from 'child_process';
 
 interface ICoordinates {
   latitude: number;
@@ -41,9 +42,7 @@ const Search: React.FC = () => {
   const [name, setName] = useState<ISearchResponse | null>(null);
   const [suburb, setSuburb] = useState<ISearchResponse | null>(null);
   const [nearby, setNearby] = useState<ISearchResponse | null>(null);
-  const [searchResult, setSearchResult] = useState<ISearchResponse | null>(
-    null,
-  );
+  const [hasSearched, setHasSearched] = useState(false);
 
   const inputRef = useRef<any>(null);
 
@@ -60,10 +59,18 @@ const Search: React.FC = () => {
     }
   }, []);
 
-  console.log(selectedValue);
-
   const handleSearch = useCallback(
     (targetValue: string, searchInputValue: string) => {
+      if (!hasSearched && searchInputValue) {
+        setHasSearched(true);
+      }
+      const searchParams = new URLSearchParams();
+      searchParams.append('target', targetValue);
+      searchParams.append('query', searchInputValue);
+
+      const url = `https://clinic-gamma.vercel.app/search?${searchParams.toString()}`;
+      window.open(url, '_blank');
+
       dataApi
         .getSearchResult(targetValue, searchInputValue)
         .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
@@ -106,14 +113,16 @@ const Search: React.FC = () => {
           }
         });
     },
-    [getCoordinates],
+    [getCoordinates, hasSearched],
   );
+
+  console.log(hasSearched);
 
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
     const newValue = target.value;
     setSelectedValue(newValue);
-    setCoordinates([]);
+    // setCoordinates([]);
     setActiveRadio(true);
 
     if (searchTextInput && newValue !== selectedValue) {
@@ -144,26 +153,31 @@ const Search: React.FC = () => {
 
       if (!stateVar) {
         handleSearch(target.value, searchTextInput);
+        setCoordinates([]);
       }
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTextInput(e.target.value);
+    setHasSearched(false);
+
     // setActiveRadio(true);
   };
 
   const formSubmit = (e: React.ChangeEvent<unknown>) => {
     e.preventDefault();
-    setCoordinates([]);
+    // setCoordinates([]);
+
+    if (hasSearched) {
+      return;
+    }
 
     if (selectedValue !== undefined && activeRadio) {
       handleSearch(selectedValue, searchTextInput);
+      setCoordinates([]);
     }
   };
-
-  // console.log('c', city);
-  // console.log('s', state);
 
   const handleSvgClick = () => {
     setIsActiveSvg(true);
