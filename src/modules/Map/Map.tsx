@@ -9,7 +9,6 @@ import {
 import { IResItem } from '../../types/searchTypes';
 import markerGreen from './markerGreen.png';
 import s from './Map.module.css';
-import { Zoom } from '@mui/material';
 
 interface ICoordinates {
   latitude: number;
@@ -22,14 +21,9 @@ interface IMyComponentProps {
   dataRes: IResItem | undefined;
 }
 
-interface IMarker {
-  latitude: number;
-  longitude: number;
-}
-
 const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
   const [selectedMarker, setSelectedMarker] = useState<ICoordinates | null>(
-    null,
+    coordinates && coordinates.length > 0 ? coordinates[0] : null,
   );
   const [mapOptions, setMapOptions] = useState({
     center: { lat: -24, lng: 134 },
@@ -42,6 +36,8 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
         center: { lat: dataRes.latitude, lng: dataRes.longitude },
         zoom: 13,
       });
+
+      setSelectedMarker(dataRes);
     }
   }, [dataRes]);
 
@@ -52,7 +48,7 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
           lat: coordinates[0].latitude,
           lng: coordinates[0].longitude,
         },
-        zoom: 7,
+        zoom: 9,
       });
     }
   }, [coordinates]);
@@ -89,6 +85,9 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
           position={{
             lat: selectedMarker.latitude,
             lng: selectedMarker.longitude,
+          }}
+          options={{
+            pixelOffset: new google.maps.Size(0, -40),
           }}
           onCloseClick={() => {
             setSelectedMarker(null);

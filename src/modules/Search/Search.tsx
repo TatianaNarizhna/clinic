@@ -40,11 +40,35 @@ const Search: React.FC = () => {
   const [loader, setLoader] = useState(false);
 
   const inputRef = useRef<any>(null);
+  const params = new URLSearchParams(window.location.search);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const value = searchParams.get('value');
+    const search = searchParams.get('search');
+
+    if (value && search) {
+      dataApi
+        .getSearchResult(value, search)
+        .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
+          if (res) {
+            setResponseData(res.data);
+            getCoordinates(res.data);
+            setSearchTextInput(search);
+            setSelectedValue(value);
+            setActiveRadio(true);
+          }
+          setLoader(false);
+          if (res?.data.length === 0) {
+            getCoordinates(null);
+          }
+        });
+    }
+  }, []);
 
   const getCoordinates = (arr: any) => {
     if (!arr || arr.length === 0) {
       setCoordinates([]);
-      // setSelectedValue(undefined);
     } else {
       arr.map((item: any) =>
         setCoordinates(prevState => [
@@ -59,26 +83,13 @@ const Search: React.FC = () => {
     }
   };
 
-  // console.log(selectedValue);
-
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
 
     setSelectedValue(target.value);
+    setActiveRadio(true);
     setCoordinates([]);
     setActiveRadio(true);
-
-    // if (searchTextInput) {
-    //   dataApi
-    //     .getSearchResult(target.value, searchTextInput)
-    //     .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
-    //       if (res && res.data.length > 0) {
-    //         setResponseData(res.data);
-    //         getCoordinates(res.data);
-    //         // setActiveRadio(true);
-    //       }
-    //     });
-    // }
   };
 
   const handleSvgClick = () => {
@@ -101,9 +112,6 @@ const Search: React.FC = () => {
     e.preventDefault();
     setCoordinates([]);
 
-    // console.log(selectedValue);
-    // console.log(activeRadio);
-
     if (selectedValue !== undefined && activeRadio) {
       dataApi
         .getSearchResult(selectedValue, searchTextInput)
@@ -111,8 +119,10 @@ const Search: React.FC = () => {
           if (res) {
             setResponseData(res.data);
             getCoordinates(res.data);
-
-            // console.log(res.data);
+            params.set('value', selectedValue);
+            params.set('search', searchTextInput);
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.pushState({}, '', newUrl);
           }
           setLoader(false);
           if (res?.data.length === 0) {
@@ -139,8 +149,6 @@ const Search: React.FC = () => {
   const activeBtnColor = (bottonId: string) => {
     return bottonId === activeButtonId ? `${s.button} ${s.active}` : s.button;
   };
-
-  // console.log(aboutClinic);
 
   return (
     <Section>
