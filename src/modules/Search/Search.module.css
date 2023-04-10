@@ -23,13 +23,25 @@
     width: 65%;
 }
 
+.clear_icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  padding: 7px;
+  opacity: 0;
+}
+
+.input_cont:focus-within .clear_icon {
+  opacity: 1;
+}
+
 .input {
     width: 100%;
 }
 
-input {
-    cursor: pointer;
-}
+
 
 ::-webkit-clear-button {
 
@@ -60,6 +72,7 @@ input {
     border: 1px solid var(--clinic-item-color);
     border-radius: 5px;
     background-color: rgb(231, 245, 241);
+    cursor: pointer;
 }
 
 .clinic_list {

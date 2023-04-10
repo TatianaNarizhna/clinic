@@ -1,13 +1,20 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
+import {
+  GoogleMap,
+  useLoadScript,
+  Marker,
+  InfoWindow,
+} from '@react-google-maps/api';
 import { IResItem } from '../../types/searchTypes';
 import markerGreen from './markerGreen.png';
 import s from './Map.module.css';
+import { Zoom } from '@mui/material';
 
 interface ICoordinates {
   latitude: number;
   longitude: number;
+  name: string;
 }
 
 interface IMyComponentProps {
@@ -21,6 +28,9 @@ interface IMarker {
 }
 
 const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
+  const [selectedMarker, setSelectedMarker] = useState<ICoordinates | null>(
+    null,
+  );
   const [mapOptions, setMapOptions] = useState({
     center: { lat: -24, lng: 134 },
     zoom: 4,
@@ -30,7 +40,7 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
     if (dataRes) {
       setMapOptions({
         center: { lat: dataRes.latitude, lng: dataRes.longitude },
-        zoom: 11,
+        zoom: 13,
       });
     }
   }, [dataRes]);
@@ -68,8 +78,25 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
                   }
                 : ''
             }
+            onClick={() => {
+              setSelectedMarker(marker);
+            }}
+            title={marker?.name}
           />
         ))}
+      {selectedMarker && (
+        <InfoWindow
+          position={{
+            lat: selectedMarker.latitude,
+            lng: selectedMarker.longitude,
+          }}
+          onCloseClick={() => {
+            setSelectedMarker(null);
+          }}
+        >
+          <div>{selectedMarker.name}</div>
+        </InfoWindow>
+      )}
     </GoogleMap>
   );
 };

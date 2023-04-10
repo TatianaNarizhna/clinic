@@ -5,7 +5,7 @@ body {
 font-family: 'Carter One', cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: url('./svgFile/flag2.jpg');
+  /* background-image: url('./svgFile/flag2.jpg'); */
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: top top;
@@ -58,4 +58,9 @@ ul {
   body {
     overflow: auto;
   }
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AxiosResponse } from 'axios';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -16,13 +16,19 @@ import s from './Search.module.css';
 interface ICoordinates {
   latitude: number;
   longitude: number;
+  name: string;
 }
 
 const Search: React.FC = () => {
-  const [selectedValue, setSelectedValue] = useState<string | undefined>('');
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(
+    'cities',
+  );
   const [activeRadio, setActiveRadio] = useState(false);
   const [searchTextInput, setSearchTextInput] = useState<string>('');
   const [isActiveSvg, setIsActiveSvg] = useState(false);
+  const [responseData, setResponseData] = useState<ISearchResponse | null>(
+    null,
+  );
   const [aboutClinic, setAboutClinic] = useState<IResItem | undefined>();
   const [activeIndex, setActiveIndex] = useState(-1);
   const [activeButtonId, setActiveButtonId] = useState<string | null>(
@@ -31,152 +37,48 @@ const Search: React.FC = () => {
   const [coordinates, setCoordinates] = useState<ICoordinates[] | undefined>(
     [],
   );
-  const [city, setCity] = useState<ISearchResponse | null>(null);
-  const [state, setState] = useState<ISearchResponse | null>(null);
-  const [post, setPost] = useState<ISearchResponse | null>(null);
-  const [name, setName] = useState<ISearchResponse | null>(null);
-  const [suburb, setSuburb] = useState<ISearchResponse | null>(null);
-  const [nearby, setNearby] = useState<ISearchResponse | null>(null);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [target, setTarget] = useState('');
-  const [query, setQuery] = useState('');
+  const [loader, setLoader] = useState(false);
 
   const inputRef = useRef<any>(null);
 
-  const getCoordinates = useCallback((arr: any) => {
+  const getCoordinates = (arr: any) => {
     if (!arr || arr.length === 0) {
       setCoordinates([]);
+      // setSelectedValue(undefined);
     } else {
       arr.map((item: any) =>
         setCoordinates(prevState => [
           ...(prevState ?? []),
-          { latitude: item.latitude, longitude: item.longitude },
+          {
+            latitude: item.latitude,
+            longitude: item.longitude,
+            name: item.name,
+          },
         ]),
       );
     }
-  }, []);
+  };
 
-  const handleSearch = useCallback(
-    (targetValue: string, searchInputValue: string) => {
-      if (!hasSearched && searchInputValue) {
-        setHasSearched(true);
-      }
-      const searchParams = new URLSearchParams();
-      searchParams.append('target', targetValue);
-      searchParams.append('query', searchInputValue);
-
-      const newUrl = `/search?${searchParams.toString()}`;
-      window.history.pushState({}, '', newUrl);
-
-      const target = searchParams.get('target');
-      const query = searchParams.get('query');
-      if (target) {
-        setTarget(target);
-      }
-      if (query) {
-        setQuery(query);
-      }
-
-      dataApi
-        .getSearchResult(targetValue, searchInputValue)
-        .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
-          if (res?.data.length === 0) {
-            getCoordinates(null);
-            return;
-          }
-          if (res && res.data.length > 0 && searchInputValue) {
-            getCoordinates(res.data);
-
-            switch (targetValue) {
-              case 'cities':
-                setCity(res.data);
-                break;
-
-              case 'states':
-                setState(res.data);
-                break;
-
-              case 'postcodes':
-                setPost(res.data);
-                break;
-
-              case 'names':
-                setName(res.data);
-                break;
-
-              case 'suburbs':
-                setSuburb(res.data);
-                break;
-
-              case 'nearest':
-                setNearby(res.data);
-                break;
-
-              default:
-                break;
-            }
-          }
-        });
-    },
-    [getCoordinates, hasSearched],
-  );
+  // console.log(selectedValue);
 
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
-    const newValue = target.value;
-    setSelectedValue(newValue);
-    // setCoordinates([]);
+
+    setSelectedValue(target.value);
+    setCoordinates([]);
     setActiveRadio(true);
 
-    if (searchTextInput && newValue !== selectedValue) {
-      let stateVar;
-      switch (target.value) {
-        case 'cities':
-          stateVar = city;
-          break;
-        case 'states':
-          stateVar = state;
-          break;
-        case 'postcodes':
-          stateVar = post;
-          break;
-        case 'names':
-          stateVar = name;
-          break;
-        case 'suburbs':
-          stateVar = suburb;
-          break;
-        case 'nearest':
-          stateVar = nearby;
-          break;
-        default:
-          stateVar = null;
-          break;
-      }
-
-      if (!stateVar) {
-        handleSearch(target.value, searchTextInput);
-        setCoordinates([]);
-      }
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTextInput(e.target.value);
-    setHasSearched(false);
-  };
-
-  const formSubmit = (e: React.ChangeEvent<unknown>) => {
-    e.preventDefault();
-
-    if (hasSearched) {
-      return;
-    }
-
-    if (selectedValue !== undefined && activeRadio) {
-      handleSearch(selectedValue, searchTextInput);
-      setCoordinates([]);
-    }
+    // if (searchTextInput) {
+    //   dataApi
+    //     .getSearchResult(target.value, searchTextInput)
+    //     .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
+    //       if (res && res.data.length > 0) {
+    //         setResponseData(res.data);
+    //         getCoordinates(res.data);
+    //         // setActiveRadio(true);
+    //       }
+    //     });
+    // }
   };
 
   const handleSvgClick = () => {
@@ -188,6 +90,41 @@ const Search: React.FC = () => {
 
   const handleInputBlur = () => {
     setIsActiveSvg(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTextInput(e.target.value);
+    setActiveRadio(true);
+  };
+
+  const formSubmit = (e: React.ChangeEvent<unknown>) => {
+    e.preventDefault();
+    setCoordinates([]);
+
+    // console.log(selectedValue);
+    // console.log(activeRadio);
+
+    if (selectedValue !== undefined && activeRadio) {
+      dataApi
+        .getSearchResult(selectedValue, searchTextInput)
+        .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
+          if (res) {
+            setResponseData(res.data);
+            getCoordinates(res.data);
+
+            // console.log(res.data);
+          }
+          setLoader(false);
+          if (res?.data.length === 0) {
+            getCoordinates(null);
+          }
+        });
+    }
+    setLoader(true);
+  };
+
+  const onClearBtnClick = () => {
+    setSearchTextInput('');
   };
 
   const onClinicClick = (item: IResItem, index: number) => {
@@ -203,27 +140,7 @@ const Search: React.FC = () => {
     return bottonId === activeButtonId ? `${s.button} ${s.active}` : s.button;
   };
 
-  console.log(target);
-  console.log(query);
-
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams();
-  //   const target = searchParams.get('target');
-  //   console.log('targ', target);
-  //   const query = searchParams.get('query');
-  //   if (target && query) {
-  //     handleSearch(target, query);
-  //   }
-  // }, [handleSearch, query, target]);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasSearchParams =
-      urlParams.get('target') !== null || urlParams.get('query') !== null;
-    if (hasSearchParams) {
-      window.history.replaceState({}, '', '/search');
-    }
-  }, []);
+  // console.log(aboutClinic);
 
   return (
     <Section>
@@ -245,7 +162,7 @@ const Search: React.FC = () => {
                 <TextField
                   className={s.input}
                   id="outlined-basic"
-                  label="Enter your request"
+                  // label="Enter your request"
                   variant="outlined"
                   value={searchTextInput}
                   onChange={handleInputChange}
@@ -254,6 +171,11 @@ const Search: React.FC = () => {
                   onBlur={handleInputBlur}
                   inputRef={inputRef}
                 />
+                <div className={s.clear_icon} onClick={onClearBtnClick}>
+                  <svg width={20} height={20} fill="blue">
+                    <use xlinkHref={`${SearchIcon}#icon-cross`}></use>
+                  </svg>
+                </div>
               </div>
               <button className={s.button_search} type="submit">
                 Search
@@ -268,13 +190,14 @@ const Search: React.FC = () => {
               >
                 <FormControlLabel
                   value="cities"
-                  control={<Radio />}
+                  control={<Radio checked={selectedValue === 'cities'} />}
+                  // defaultChecked
                   label="City"
                   onChange={handleRadioChange}
                 />
                 <FormControlLabel
                   value="states"
-                  control={<Radio />}
+                  control={<Radio checked={selectedValue === 'states'} />}
                   label="State"
                   onChange={handleRadioChange}
                 />
@@ -308,152 +231,44 @@ const Search: React.FC = () => {
         </form>
 
         <div className={s.search_res}>
-          <div>
-            {' '}
-            {coordinates === null ||
-            !Array.isArray(coordinates) ||
-            coordinates.length === 0 ? (
-              <h4 className={s.no_results}>No results, please try again</h4>
-            ) : (
-              <div className={s.over}>
-                {' '}
-                <ul className={s.overFlow}>
-                  {selectedValue === 'cities' &&
-                    Array.isArray(city) &&
-                    city.map((item, i) => (
-                      <li
-                        key={i}
-                        className={`${s.clinic_item} ${
-                          activeIndex === i ? s.active : ''
-                        }`}
-                        onClick={() => {
-                          onClinicClick(item, i);
-                        }}
-                      >
-                        <h4>{item.longName}</h4>
-                        <p>
-                          {item.city}, {item.address}
-                        </p>
-                        <div className={s.clinic_list}>
-                          <p>{item.website}</p>
-                          <p>p. {item.phone}</p>
-                        </div>
-                      </li>
-                    ))}
-                  {selectedValue === 'states' &&
-                    Array.isArray(state) &&
-                    state.map((item, i) => (
-                      <li
-                        key={i}
-                        className={`${s.clinic_item} ${
-                          activeIndex === i ? s.active : ''
-                        }`}
-                        onClick={() => {
-                          onClinicClick(item, i);
-                        }}
-                      >
-                        <h4>{item.longName}</h4>
-                        <p>
-                          {item.city}, {item.address}
-                        </p>
-                        <div className={s.clinic_list}>
-                          <p>{item.website}</p>
-                          <p>p. {item.phone}</p>
-                        </div>
-                      </li>
-                    ))}
-                  {selectedValue === 'postcodes' &&
-                    Array.isArray(post) &&
-                    post.map((item, i) => (
-                      <li
-                        key={i}
-                        className={`${s.clinic_item} ${
-                          activeIndex === i ? s.active : ''
-                        }`}
-                        onClick={() => {
-                          onClinicClick(item, i);
-                        }}
-                      >
-                        <h4>{item.longName}</h4>
-                        <p>
-                          {item.city}, {item.address}
-                        </p>
-                        <div className={s.clinic_list}>
-                          <p>{item.website}</p>
-                          <p>p. {item.phone}</p>
-                        </div>
-                      </li>
-                    ))}
-                  {selectedValue === 'names' &&
-                    Array.isArray(name) &&
-                    name.map((item, i) => (
-                      <li
-                        key={i}
-                        className={`${s.clinic_item} ${
-                          activeIndex === i ? s.active : ''
-                        }`}
-                        onClick={() => {
-                          onClinicClick(item, i);
-                        }}
-                      >
-                        <h4>{item.longName}</h4>
-                        <p>
-                          {item.city}, {item.address}
-                        </p>
-                        <div className={s.clinic_list}>
-                          <p>{item.website}</p>
-                          <p>p. {item.phone}</p>
-                        </div>
-                      </li>
-                    ))}
-                  {selectedValue === 'suburbs' &&
-                    Array.isArray(suburb) &&
-                    suburb.map((item, i) => (
-                      <li
-                        key={i}
-                        className={`${s.clinic_item} ${
-                          activeIndex === i ? s.active : ''
-                        }`}
-                        onClick={() => {
-                          onClinicClick(item, i);
-                        }}
-                      >
-                        <h4>{item.longName}</h4>
-                        <p>
-                          {item.city}, {item.address}
-                        </p>
-                        <div className={s.clinic_list}>
-                          <p>{item.website}</p>
-                          <p>p. {item.phone}</p>
-                        </div>
-                      </li>
-                    ))}
-                  {selectedValue === 'nearest' &&
-                    Array.isArray(nearby) &&
-                    nearby.map((item, i) => (
-                      <li
-                        key={i}
-                        className={`${s.clinic_item} ${
-                          activeIndex === i ? s.active : ''
-                        }`}
-                        onClick={() => {
-                          onClinicClick(item, i);
-                        }}
-                      >
-                        <h4>{item.longName}</h4>
-                        <p>
-                          {item.city}, {item.address}
-                        </p>
-                        <div className={s.clinic_list}>
-                          <p>{item.website}</p>
-                          <p>p. {item.phone}</p>
-                        </div>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-            )}
-          </div>
+          {loader && <p className={s.no_results}>Loading information...</p>}
+          {!loader && (
+            <div>
+              {' '}
+              {responseData === null ||
+              !Array.isArray(responseData) ||
+              responseData.length === 0 ? (
+                <h4 className={s.no_results}>No results, please try again</h4>
+              ) : (
+                <div className={s.over}>
+                  {' '}
+                  <ul className={s.overFlow}>
+                    {Array.isArray(responseData) &&
+                      responseData.map((item, i) => (
+                        <li
+                          key={i}
+                          className={`${s.clinic_item} ${
+                            activeIndex === i ? s.active : ''
+                          }`}
+                          onClick={() => {
+                            onClinicClick(item, i);
+                          }}
+                        >
+                          <h4>{item.longName}</h4>
+                          <p>
+                            {item.city}, {item.address}
+                          </p>
+                          <div className={s.clinic_list}>
+                            <p>{item.website}</p>
+                            <p>p. {item.phone}</p>
+                          </div>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className={s.lam_relative}>
             <div className={s.lambda}>
@@ -492,7 +307,13 @@ const Search: React.FC = () => {
                         <p>{aboutClinic.state}</p>
                       </div>
                       <div>
-                        <p>{aboutClinic.email}</p>
+                        <a
+                          href="mailto:{aboutClinic.email}"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {aboutClinic.email}
+                        </a>
                       </div>
                     </div>
                     <p>{aboutClinic.about}</p>
