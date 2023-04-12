@@ -19,9 +19,14 @@ interface ICoordinates {
 interface IMyComponentProps {
   coordinates: ICoordinates[] | undefined;
   dataRes: IResItem | undefined;
+  activeIndex: number;
 }
 
-const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
+const Map: React.FC<IMyComponentProps> = ({
+  coordinates,
+  dataRes,
+  activeIndex,
+}) => {
   const [selectedMarker, setSelectedMarker] = useState<ICoordinates | null>(
     coordinates && coordinates.length > 0 ? coordinates[0] : null,
   );
@@ -29,6 +34,13 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
     center: { lat: -24, lng: 134 },
     zoom: 4,
   });
+
+  useEffect(() => {
+    // Перевстановлюємо значення обраних маркерів при зміні `dataRes`
+    setSelectedMarker(null);
+  }, [dataRes]);
+
+  console.log(activeIndex);
 
   useEffect(() => {
     if (dataRes) {
@@ -66,8 +78,9 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
             key={i}
             position={{ lat: marker.latitude, lng: marker.longitude }}
             icon={
-              marker.latitude === dataRes?.latitude &&
-              marker.longitude === dataRes?.longitude
+              selectedMarker &&
+              selectedMarker.latitude === marker.latitude &&
+              selectedMarker.longitude === marker.longitude
                 ? {
                     url: markerGreen,
                     scaledSize: new window.google.maps.Size(70, 70),
@@ -103,6 +116,7 @@ const Map: React.FC<IMyComponentProps> = ({ coordinates, dataRes }) => {
 const MapComponent: React.FC<IMyComponentProps> = ({
   coordinates,
   dataRes,
+  activeIndex,
 }) => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: 'AIzaSyC_3yuRXAlZz0w7Ohj5tJTLuuaUtuEiJnQ',
@@ -112,7 +126,13 @@ const MapComponent: React.FC<IMyComponentProps> = ({
     return <p>Loading...</p>;
   }
 
-  return <Map coordinates={coordinates} dataRes={dataRes} />;
+  return (
+    <Map
+      coordinates={coordinates}
+      dataRes={dataRes}
+      activeIndex={activeIndex}
+    />
+  );
 };
 
 export default MapComponent;

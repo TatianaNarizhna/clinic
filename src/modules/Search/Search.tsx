@@ -5,7 +5,6 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
 import { ISearchResponse, IResItem } from '../../types/searchTypes';
 import * as dataApi from '../../services/dataApi';
 import Section from '../Section/Section';
@@ -66,29 +65,58 @@ const Search: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    dataApi
+      .getAllClinics()
+      .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
+        if (res) {
+          setResponseData(res.data);
+          getCoordinates(res.data);
+          setActiveRadio(true);
+        }
+        setLoader(false);
+        if (res?.data.length === 0) {
+          getCoordinates(null);
+        }
+      });
+  }, []);
+
   const getCoordinates = (arr: any) => {
-    if (!arr || arr.length === 0) {
-      setCoordinates([]);
-    } else {
-      arr.map((item: any) =>
-        setCoordinates(prevState => [
-          ...(prevState ?? []),
-          {
-            latitude: item.latitude,
-            longitude: item.longitude,
-            name: item.name,
-          },
-        ]),
-      );
-    }
+    arr.map((item: any) =>
+      setCoordinates(prevState => [
+        ...(prevState ?? []),
+        {
+          latitude: item.latitude,
+          longitude: item.longitude,
+          name: item.name,
+        },
+      ]),
+    );
   };
+
+  // const getCoordinates = (arr: any) => {
+  //   if (!arr || arr.length === 0) {
+  //     setCoordinates([]);
+  //   } else {
+  //     arr.map((item: any) =>
+  //       setCoordinates(prevState => [
+  //         ...(prevState ?? []),
+  //         {
+  //           latitude: item.latitude,
+  //           longitude: item.longitude,
+  //           name: item.name,
+  //         },
+  //       ]),
+  //     );
+  //   }
+  // };
 
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
 
     setSelectedValue(target.value);
     setActiveRadio(true);
-    setCoordinates([]);
+    // setCoordinates([]);
     setActiveRadio(true);
   };
 
@@ -112,6 +140,10 @@ const Search: React.FC = () => {
     e.preventDefault();
     setCoordinates([]);
 
+    if (searchTextInput === '') {
+      return;
+    }
+
     if (selectedValue !== undefined && activeRadio) {
       dataApi
         .getSearchResult(selectedValue, searchTextInput)
@@ -126,7 +158,7 @@ const Search: React.FC = () => {
           }
           setLoader(false);
           if (res?.data.length === 0) {
-            getCoordinates(null);
+            // getCoordinates(null);
           }
         });
     }
@@ -167,17 +199,14 @@ const Search: React.FC = () => {
                 </svg>
               </div>{' '}
               <div className={s.input_cont}>
-                <TextField
+                <input
                   className={s.input}
-                  id="outlined-basic"
-                  // label="Enter your request"
-                  variant="outlined"
-                  value={searchTextInput}
-                  onChange={handleInputChange}
                   type="search"
                   name="search"
+                  value={searchTextInput}
+                  onChange={handleInputChange}
                   onBlur={handleInputBlur}
-                  inputRef={inputRef}
+                  // inputRef={inputRef}
                 />
                 <div className={s.clear_icon} onClick={onClearBtnClick}>
                   <svg width={20} height={20} fill="blue">
@@ -185,7 +214,11 @@ const Search: React.FC = () => {
                   </svg>
                 </div>
               </div>
-              <button className={s.button_search} type="submit">
+              <button
+                className={s.button_search}
+                type="submit"
+                disabled={loader}
+              >
                 Search
               </button>
             </div>
@@ -267,7 +300,7 @@ const Search: React.FC = () => {
                             {item.city}, {item.address}
                           </p>
                           <div className={s.clinic_list}>
-                            <p>{item.website}</p>
+                            <a href={item.website}>{item.website}</a>
                             <p>p. {item.phone}</p>
                           </div>
                         </li>
@@ -333,11 +366,19 @@ const Search: React.FC = () => {
             )}
             {activeButtonId === 'location' ? (
               <div>
-                <MapComponent coordinates={coordinates} dataRes={aboutClinic} />
+                <MapComponent
+                  coordinates={coordinates}
+                  dataRes={aboutClinic}
+                  activeIndex={activeIndex}
+                />
               </div>
             ) : (
               <div>
-                <MapComponent coordinates={coordinates} dataRes={aboutClinic} />
+                <MapComponent
+                  coordinates={coordinates}
+                  dataRes={aboutClinic}
+                  activeIndex={activeIndex}
+                />
               </div>
             )}
           </div>

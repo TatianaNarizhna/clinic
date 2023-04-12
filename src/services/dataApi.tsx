@@ -13,3 +13,13 @@ export const getSearchResult = async (value: string, search: string) => {
     console.log(error);
   }
 };
+
+export const getAllClinics = async () => {
+  try {
+    const response = await axios.get<ISearchResponse>(`${BASE_URL}/clinics`);
+    // console.log(response);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
