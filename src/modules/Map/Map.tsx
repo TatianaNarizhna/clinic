@@ -39,7 +39,6 @@ const Map: React.FC<IMyComponentProps> = ({
   const { updateSelectedMarker } = useContext(MyContext);
 
   useEffect(() => {
-    // Перевстановлюємо значення обраних маркерів при зміні `dataRes`
     setSelectedMarker(null);
   }, [dataRes]);
 
@@ -63,7 +62,7 @@ const Map: React.FC<IMyComponentProps> = ({
           lat: coordinates[0].latitude,
           lng: coordinates[0].longitude,
         },
-        zoom: 9,
+        zoom: 8,
       });
     }
   }, [coordinates]);
