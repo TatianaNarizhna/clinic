@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
   GoogleMap,
   useLoadScript,
@@ -9,11 +9,12 @@ import {
 import { IResItem } from '../../types/searchTypes';
 import markerGreen from './markerGreen.png';
 import s from './Map.module.css';
+import { MyContext } from '../Search/Search';
 
 interface ICoordinates {
   latitude: number;
   longitude: number;
-  name: string;
+  longName: string;
 }
 
 interface IMyComponentProps {
@@ -35,12 +36,14 @@ const Map: React.FC<IMyComponentProps> = ({
     zoom: 4,
   });
 
+  const { updateSelectedMarker } = useContext(MyContext);
+
   useEffect(() => {
     // Перевстановлюємо значення обраних маркерів при зміні `dataRes`
     setSelectedMarker(null);
   }, [dataRes]);
 
-  console.log(activeIndex);
+  // console.log(activeIndex);
 
   useEffect(() => {
     if (dataRes) {
@@ -64,6 +67,8 @@ const Map: React.FC<IMyComponentProps> = ({
       });
     }
   }, [coordinates]);
+
+  // console.log(selectedMarker);
 
   return (
     <GoogleMap
@@ -89,8 +94,9 @@ const Map: React.FC<IMyComponentProps> = ({
             }
             onClick={() => {
               setSelectedMarker(marker);
+              updateSelectedMarker(marker);
             }}
-            title={marker?.name}
+            title={marker?.longName}
           />
         ))}
       {selectedMarker && (
@@ -106,7 +112,7 @@ const Map: React.FC<IMyComponentProps> = ({
             setSelectedMarker(null);
           }}
         >
-          <div>{selectedMarker.name}</div>
+          <div>{selectedMarker.longName}</div>
         </InfoWindow>
       )}
     </GoogleMap>

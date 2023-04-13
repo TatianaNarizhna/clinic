@@ -104,9 +104,15 @@
 }
 
 .overFlow {
-  max-height: 73.5vh; 
-  overflow-y: auto;
+  height: 629px; 
+  overflow-y: scroll;
 }
+
+/* .over {
+      height: 629px; 
+      overflow-y: scroll;
+
+} */
 
 .active {
     background-color: var(--active-clinic);

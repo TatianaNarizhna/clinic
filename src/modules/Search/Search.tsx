@@ -1,6 +1,13 @@
 import React from 'react';
 import { AxiosResponse } from 'axios';
-import { useState, useEffect, useRef } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  createContext,
+  useLayoutEffect,
+} from 'react';
+import { useScroll } from '@react-hooks-library/core';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -15,20 +22,42 @@ import s from './Search.module.css';
 interface ICoordinates {
   latitude: number;
   longitude: number;
-  name: string;
+  longName: string;
+  suburb: string;
+  state: string;
+  email: string;
+  about: string;
 }
+
+interface MyContextValue {
+  activeMarker: ICoordinates;
+  updateSelectedMarker: (newData: any) => void;
+}
+
+export const MyContext = createContext<MyContextValue>({
+  activeMarker: {
+    latitude: 0,
+    longitude: 0,
+    longName: '',
+    suburb: '',
+    state: '',
+    email: '',
+    about: '',
+  },
+  updateSelectedMarker: () => {},
+});
 
 const Search: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState<string | undefined>(
     'cities',
   );
-  const [activeRadio, setActiveRadio] = useState(false);
+  const [activeRadio, setActiveRadio] = useState(true);
   const [searchTextInput, setSearchTextInput] = useState<string>('');
   const [isActiveSvg, setIsActiveSvg] = useState(false);
   const [responseData, setResponseData] = useState<ISearchResponse | null>(
     null,
   );
-  const [aboutClinic, setAboutClinic] = useState<IResItem | undefined>();
+  const [aboutClinic, setAboutClinic] = useState<any | undefined>();
   const [activeIndex, setActiveIndex] = useState(-1);
   const [activeButtonId, setActiveButtonId] = useState<string | null>(
     'location',
@@ -37,14 +66,53 @@ const Search: React.FC = () => {
     [],
   );
   const [loader, setLoader] = useState(false);
+  const [activeMarker, setActiveMarker] = useState<ICoordinates>({
+    latitude: 0,
+    longitude: 0,
+    longName: '',
+    suburb: '',
+    state: '',
+    email: '',
+    about: '',
+  });
+
+  // const updateSelectedMarker = (newData: ICoordinates) => {
+  //   setActiveMarker(newData);
+  //   setAboutClinic(newData);
+  //   setActiveIndex(-1);
+
+  //   if (scrollRef.current) {
+  //     scrollTo({
+  //       top: scrollRef.current.scrollTop + newData.latitude,
+  //       left: scrollRef.current.scrollLeft + newData.longitude,
+  //       behavior: 'smooth',
+  //     });
+  //   }
+  // };
+
+  const [hasInput, setHasInput] = useState(true);
 
   const inputRef = useRef<any>(null);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useScroll(scrollRef, ({ scrollX, scrollY }) => {
+    console.log(scrollX);
+  });
+
   const params = new URLSearchParams(window.location.search);
+
+  const updateSelectedMarker = (newData: ICoordinates) => {
+    setActiveMarker(newData);
+    setAboutClinic(newData);
+    setActiveIndex(-1);
+  };
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const value = searchParams.get('value');
     const search = searchParams.get('search');
+    // setHasInput(false);
+    // setActiveRadio(true);
 
     if (value && search) {
       dataApi
@@ -56,6 +124,8 @@ const Search: React.FC = () => {
             setSearchTextInput(search);
             setSelectedValue(value);
             setActiveRadio(true);
+            setHasInput(false);
+            // setHasInput(false);
           }
           setLoader(false);
           if (res?.data.length === 0) {
@@ -66,19 +136,26 @@ const Search: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    dataApi
-      .getAllClinics()
-      .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
-        if (res) {
-          setResponseData(res.data);
-          getCoordinates(res.data);
-          setActiveRadio(true);
-        }
-        setLoader(false);
-        if (res?.data.length === 0) {
-          getCoordinates(null);
-        }
-      });
+    const searchParams = new URLSearchParams(window.location.search);
+    const value = searchParams.get('value');
+    const search = searchParams.get('search');
+    if (!value && !search) {
+      dataApi
+        .getAllClinics()
+        .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
+          if (res) {
+            console.log('has');
+            console.log(hasInput);
+            setResponseData(res.data);
+            getCoordinates(res.data);
+            setActiveRadio(true);
+          }
+          setLoader(false);
+          if (res?.data.length === 0) {
+            getCoordinates(null);
+          }
+        });
+    }
   }, []);
 
   const getCoordinates = (arr: any) => {
@@ -88,28 +165,15 @@ const Search: React.FC = () => {
         {
           latitude: item.latitude,
           longitude: item.longitude,
-          name: item.name,
+          longName: item.longName,
+          suburb: item.suburb,
+          state: item.state,
+          email: item.email,
+          about: item.about,
         },
       ]),
     );
   };
-
-  // const getCoordinates = (arr: any) => {
-  //   if (!arr || arr.length === 0) {
-  //     setCoordinates([]);
-  //   } else {
-  //     arr.map((item: any) =>
-  //       setCoordinates(prevState => [
-  //         ...(prevState ?? []),
-  //         {
-  //           latitude: item.latitude,
-  //           longitude: item.longitude,
-  //           name: item.name,
-  //         },
-  //       ]),
-  //     );
-  //   }
-  // };
 
   const handleRadioChange = (event: React.SyntheticEvent<Element, Event>) => {
     const target = event.target as HTMLInputElement;
@@ -117,7 +181,7 @@ const Search: React.FC = () => {
     setSelectedValue(target.value);
     setActiveRadio(true);
     // setCoordinates([]);
-    setActiveRadio(true);
+    // setActiveRadio(true);
   };
 
   const handleSvgClick = () => {
@@ -150,7 +214,9 @@ const Search: React.FC = () => {
         .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
           if (res) {
             setResponseData(res.data);
+            setActiveRadio(true);
             getCoordinates(res.data);
+            // setHasInput(true);
             params.set('value', selectedValue);
             params.set('search', searchTextInput);
             const newUrl = window.location.pathname + '?' + params.toString();
@@ -172,6 +238,15 @@ const Search: React.FC = () => {
   const onClinicClick = (item: IResItem, index: number) => {
     setAboutClinic(item);
     setActiveIndex(index);
+    setActiveMarker({
+      latitude: 0,
+      longitude: 0,
+      longName: '',
+      suburb: '',
+      state: '',
+      email: '',
+      about: '',
+    });
   };
 
   const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -244,25 +319,25 @@ const Search: React.FC = () => {
                 />
                 <FormControlLabel
                   value="postcodes"
-                  control={<Radio />}
+                  control={<Radio checked={selectedValue === 'postcodes'} />}
                   label="Postal Code"
                   onChange={handleRadioChange}
                 />
                 <FormControlLabel
                   value="names"
-                  control={<Radio />}
+                  control={<Radio checked={selectedValue === 'names'} />}
                   label="Clinic Name"
                   onChange={handleRadioChange}
                 />
                 <FormControlLabel
                   value="suburbs"
-                  control={<Radio />}
+                  control={<Radio checked={selectedValue === 'suburbs'} />}
                   label="Suburb"
                   onChange={handleRadioChange}
                 />
                 <FormControlLabel
                   value="nearest"
-                  control={<Radio />}
+                  control={<Radio checked={selectedValue === 'nearest'} />}
                   label="Nearby"
                   onChange={handleRadioChange}
                 />
@@ -281,7 +356,7 @@ const Search: React.FC = () => {
               responseData.length === 0 ? (
                 <h4 className={s.no_results}>No results, please try again</h4>
               ) : (
-                <div className={s.over}>
+                <div className={s.over} ref={scrollRef}>
                   {' '}
                   <ul className={s.overFlow}>
                     {Array.isArray(responseData) &&
@@ -290,6 +365,10 @@ const Search: React.FC = () => {
                           key={i}
                           className={`${s.clinic_item} ${
                             activeIndex === i ? s.active : ''
+                          } ${
+                            activeMarker?.longName === item.longName
+                              ? s.active
+                              : ''
                           }`}
                           onClick={() => {
                             onClinicClick(item, i);
@@ -364,23 +443,25 @@ const Search: React.FC = () => {
                 )}
               </div>
             )}
-            {activeButtonId === 'location' ? (
-              <div>
-                <MapComponent
-                  coordinates={coordinates}
-                  dataRes={aboutClinic}
-                  activeIndex={activeIndex}
-                />
-              </div>
-            ) : (
-              <div>
-                <MapComponent
-                  coordinates={coordinates}
-                  dataRes={aboutClinic}
-                  activeIndex={activeIndex}
-                />
-              </div>
-            )}
+            <MyContext.Provider value={{ activeMarker, updateSelectedMarker }}>
+              {activeButtonId === 'location' ? (
+                <div>
+                  <MapComponent
+                    coordinates={coordinates}
+                    dataRes={aboutClinic}
+                    activeIndex={activeIndex}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <MapComponent
+                    coordinates={coordinates}
+                    dataRes={aboutClinic}
+                    activeIndex={activeIndex}
+                  />
+                </div>
+              )}
+            </MyContext.Provider>
           </div>
         </div>
       </div>
