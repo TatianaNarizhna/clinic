@@ -75,6 +75,41 @@
     border-radius: 3px;
 }
 
+.label_radio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 25px;
+}
+
+.input_button {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.check {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+input[type='radio']:checked + .check {
+  border: 5px solid rgb(72, 184, 147);
+  width: 20px;
+  height: 20px;
+}
+
+input[type='radio'] + .check {
+  border: 1px solid rgb(9, 29, 9);
+}
+
+.radio_name {
+  margin-left: 10px;
+}
+
+
 .no_results {
     text-align: center;
 }
@@ -107,12 +142,6 @@
   height: 685px; 
   overflow-y: scroll;
 }
-
-/* .over {
-      height: 629px; 
-      overflow-y: scroll;
-
-} */
 
 .active {
     background-color: var(--active-clinic);

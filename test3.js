@@ -519,3 +519,51 @@
 // };
 
 // export default Search;
+
+// -----------------------
+
+/* <FormControl className={s.form_control}>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="row-radio-buttons-group"
+              >
+                <FormControlLabel
+                  value="cities"
+                  control={<Radio checked={selectedValue === 'cities'} />}
+                  // defaultChecked
+                  label="City"
+                  onChange={handleRadioChange}
+                />
+                <FormControlLabel
+                  value="states"
+                  control={<Radio checked={selectedValue === 'states'} />}
+                  label="State"
+                  onChange={handleRadioChange}
+                />
+                <FormControlLabel
+                  value="postcodes"
+                  control={<Radio checked={selectedValue === 'postcodes'} />}
+                  label="Postal Code"
+                  onChange={handleRadioChange}
+                />
+                <FormControlLabel
+                  value="names"
+                  control={<Radio checked={selectedValue === 'names'} />}
+                  label="Clinic Name"
+                  onChange={handleRadioChange}
+                />
+                <FormControlLabel
+                  value="suburbs"
+                  control={<Radio checked={selectedValue === 'suburbs'} />}
+                  label="Suburb"
+                  onChange={handleRadioChange}
+                />
+                <FormControlLabel
+                  value="nearest"
+                  control={<Radio checked={selectedValue === 'nearest'} />}
+                  label="Nearby"
+                  onChange={handleRadioChange}
+                />
+              </RadioGroup>
+            </FormControl> */

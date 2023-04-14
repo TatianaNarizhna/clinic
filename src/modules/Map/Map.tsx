@@ -28,8 +28,11 @@ const Map: React.FC<IMyComponentProps> = ({
   dataRes,
   activeIndex,
 }) => {
+  // const [selectedMarker, setSelectedMarker] = useState<ICoordinates | null>(
+  //   coordinates && coordinates.length > 0 ? coordinates[0] : null,
+  // );
   const [selectedMarker, setSelectedMarker] = useState<ICoordinates | null>(
-    coordinates && coordinates.length > 0 ? coordinates[0] : null,
+    null,
   );
   const [mapOptions, setMapOptions] = useState({
     center: { lat: -24, lng: 134 },
@@ -41,8 +44,6 @@ const Map: React.FC<IMyComponentProps> = ({
   useEffect(() => {
     setSelectedMarker(null);
   }, [dataRes]);
-
-  // console.log(activeIndex);
 
   useEffect(() => {
     if (dataRes) {
@@ -67,7 +68,10 @@ const Map: React.FC<IMyComponentProps> = ({
     }
   }, [coordinates]);
 
-  // console.log(selectedMarker);
+  const handleMarkerClick = (marker: ICoordinates) => {
+    setSelectedMarker(marker);
+    updateSelectedMarker(marker);
+  };
 
   return (
     <GoogleMap
@@ -91,10 +95,7 @@ const Map: React.FC<IMyComponentProps> = ({
                   }
                 : ''
             }
-            onClick={() => {
-              setSelectedMarker(marker);
-              updateSelectedMarker(marker);
-            }}
+            onClick={() => handleMarkerClick(marker)}
             title={marker?.longName}
           />
         ))}
@@ -105,7 +106,7 @@ const Map: React.FC<IMyComponentProps> = ({
             lng: selectedMarker.longitude,
           }}
           options={{
-            pixelOffset: new google.maps.Size(0, -40),
+            pixelOffset: new google.maps.Size(0, -70),
           }}
           onCloseClick={() => {
             setSelectedMarker(null);

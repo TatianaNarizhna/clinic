@@ -1,17 +1,9 @@
 import React from 'react';
 import { AxiosResponse } from 'axios';
-import {
-  useState,
-  useEffect,
-  useRef,
-  createContext,
-  useLayoutEffect,
-} from 'react';
+import { useState, useEffect, useRef, createContext } from 'react';
 import { useScroll } from '@react-hooks-library/core';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
+import { scroller as scroll } from 'react-scroll';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
 import { ISearchResponse, IResItem } from '../../types/searchTypes';
 import * as dataApi from '../../services/dataApi';
 import Section from '../Section/Section';
@@ -76,28 +68,14 @@ const Search: React.FC = () => {
     about: '',
   });
 
-  // const updateSelectedMarker = (newData: ICoordinates) => {
-  //   setActiveMarker(newData);
-  //   setAboutClinic(newData);
-  //   setActiveIndex(-1);
-
-  //   if (scrollRef.current) {
-  //     scrollTo({
-  //       top: scrollRef.current.scrollTop + newData.latitude,
-  //       left: scrollRef.current.scrollLeft + newData.longitude,
-  //       behavior: 'smooth',
-  //     });
-  //   }
-  // };
-
   const [hasInput, setHasInput] = useState(true);
 
   const inputRef = useRef<any>(null);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  useScroll(scrollRef, ({ scrollX, scrollY }) => {
-    console.log(scrollX);
-  });
+  const scrollRef = useRef<HTMLLIElement>(null);
+  // useScroll(scrollRef, ({ scrollX, scrollY }) => {
+  //   console.log(scrollX);
+  // });
 
   const params = new URLSearchParams(window.location.search);
 
@@ -105,6 +83,32 @@ const Search: React.FC = () => {
     setActiveMarker(newData);
     setAboutClinic(newData);
     setActiveIndex(-1);
+
+    const activeItem: HTMLElement | null = document.querySelector(
+      `.${s.active}`,
+    );
+
+    // const itemIdString: string | null | undefined =
+    //   activeItem?.getAttribute('id');
+    // if (itemIdString !== null && itemIdString !== undefined) {
+    //   const itemId: number = parseInt(itemIdString, 10);
+    //   scroll.scrollTo(`${itemId}`, {
+    //     duration: 500,
+    //     delay: 100,
+    //     smooth: true,
+    //     offset: -70,
+    //   });
+    // }
+
+    activeItem?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest',
+    });
+
+    // if (scrollRef && scrollRef.current) {
+    //   scrollRef.current.scrollIntoView();
+    // }
   };
 
   useEffect(() => {
@@ -144,8 +148,6 @@ const Search: React.FC = () => {
         .getAllClinics()
         .then((res: AxiosResponse<ISearchResponse, any> | undefined) => {
           if (res) {
-            console.log('has');
-            console.log(hasInput);
             setResponseData(res.data);
             getCoordinates(res.data);
             setActiveRadio(true);
@@ -156,6 +158,7 @@ const Search: React.FC = () => {
           }
         });
     }
+    setLoader(true);
   }, []);
 
   const getCoordinates = (arr: any) => {
@@ -292,57 +295,97 @@ const Search: React.FC = () => {
               <button
                 className={s.button_search}
                 type="submit"
-                disabled={loader}
+                disabled={!searchTextInput || loader}
               >
                 Search
               </button>
             </div>
 
-            <FormControl className={s.form_control}>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-              >
-                <FormControlLabel
+            <div className={s.form_control}>
+              <label htmlFor="cities" className={s.label_radio}>
+                <input
+                  className={s.input_button}
+                  type="radio"
+                  id="cities"
+                  name="cities"
                   value="cities"
-                  control={<Radio checked={selectedValue === 'cities'} />}
                   // defaultChecked
-                  label="City"
+                  checked={selectedValue === 'cities'}
                   onChange={handleRadioChange}
-                />
-                <FormControlLabel
+                />{' '}
+                <span className={s.check}></span>
+                <span className={s.radio_name}>City</span>
+              </label>
+              <label htmlFor="states" className={s.label_radio}>
+                <input
+                  className={s.input_button}
+                  type="radio"
+                  id="states"
+                  name="states"
                   value="states"
-                  control={<Radio checked={selectedValue === 'states'} />}
-                  label="State"
+                  checked={selectedValue === 'states'}
                   onChange={handleRadioChange}
-                />
-                <FormControlLabel
+                />{' '}
+                <span className={s.check}></span>
+                <span className={s.radio_name}>State</span>
+              </label>
+
+              <label htmlFor="postcodes" className={s.label_radio}>
+                <input
+                  className={s.input_button}
+                  type="radio"
+                  id="postcodes"
+                  name="postcodes"
                   value="postcodes"
-                  control={<Radio checked={selectedValue === 'postcodes'} />}
-                  label="Postal Code"
+                  checked={selectedValue === 'postcodes'}
                   onChange={handleRadioChange}
-                />
-                <FormControlLabel
+                />{' '}
+                <span className={s.check}></span>
+                <span className={s.radio_name}>Post code</span>
+              </label>
+
+              <label htmlFor="names" className={s.label_radio}>
+                <input
+                  className={s.input_button}
+                  type="radio"
+                  id="names"
+                  name="names"
                   value="names"
-                  control={<Radio checked={selectedValue === 'names'} />}
-                  label="Clinic Name"
+                  checked={selectedValue === 'names'}
                   onChange={handleRadioChange}
-                />
-                <FormControlLabel
+                />{' '}
+                <span className={s.check}></span>
+                <span className={s.radio_name}>Name</span>
+              </label>
+
+              <label htmlFor="suburbs" className={s.label_radio}>
+                <input
+                  className={s.input_button}
+                  type="radio"
+                  id="suburbs"
+                  name="suburbs"
                   value="suburbs"
-                  control={<Radio checked={selectedValue === 'suburbs'} />}
-                  label="Suburb"
+                  checked={selectedValue === 'suburbs'}
                   onChange={handleRadioChange}
-                />
-                <FormControlLabel
+                />{' '}
+                <span className={s.check}></span>
+                <span className={s.radio_name}>Suburbs</span>
+              </label>
+
+              <label htmlFor="nearest" className={s.label_radio}>
+                <input
+                  className={s.input_button}
+                  type="radio"
+                  id="nearest"
+                  name="nearest"
                   value="nearest"
-                  control={<Radio checked={selectedValue === 'nearest'} />}
-                  label="Nearby"
+                  checked={selectedValue === 'nearest'}
                   onChange={handleRadioChange}
-                />
-              </RadioGroup>
-            </FormControl>
+                />{' '}
+                <span className={s.check}></span>
+                <span className={s.radio_name}>Nearest</span>
+              </label>
+            </div>
           </div>
         </form>
 
@@ -356,13 +399,14 @@ const Search: React.FC = () => {
               responseData.length === 0 ? (
                 <h4 className={s.no_results}>No results, please try again</h4>
               ) : (
-                <div className={s.over} ref={scrollRef}>
+                <div className={s.over}>
                   {' '}
                   <ul className={s.overFlow}>
                     {Array.isArray(responseData) &&
                       responseData.map((item, i) => (
                         <li
                           key={i}
+                          id={String(i)}
                           className={`${s.clinic_item} ${
                             activeIndex === i ? s.active : ''
                           } ${
