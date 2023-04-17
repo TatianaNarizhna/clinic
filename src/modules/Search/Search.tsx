@@ -100,11 +100,11 @@ const Search: React.FC = () => {
     //   });
     // }
 
-    activeItem?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-      inline: 'nearest',
-    });
+    // activeItem?.scrollIntoView({
+    //   behavior: 'smooth',
+    //   block: 'start',
+    //   inline: 'nearest',
+    // });
 
     // if (scrollRef && scrollRef.current) {
     //   scrollRef.current.scrollIntoView();
@@ -406,7 +406,7 @@ const Search: React.FC = () => {
                       responseData.map((item, i) => (
                         <li
                           key={i}
-                          id={String(i)}
+                          id={item.longName}
                           className={`${s.clinic_item} ${
                             activeIndex === i ? s.active : ''
                           } ${

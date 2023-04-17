@@ -6,9 +6,9 @@ font-family: 'Carter One', cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-image: url('./svgFile/flag2.jpg'); */
-  background-repeat: no-repeat;
+  /* background-repeat: no-repeat;
   background-attachment: fixed;
-  background-position: top top;
+  background-position: top top; */
  background-size: cover;
  overflow: hidden;
 
@@ -17,6 +17,10 @@ font-family: 'Carter One', cursive;
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+html { 
+  scroll-behavior: smooth;
 }
 
 

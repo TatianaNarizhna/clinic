@@ -139,9 +139,14 @@ input[type='radio'] + .check {
 }
 
 .overFlow {
-  height: 685px; 
+  height: 42.5rem; 
   overflow-y: scroll;
+  scroll-behavior: smooth;
 }
+
+/* .over {
+  scroll-behavior: smooth;
+} */
 
 .active {
     background-color: var(--active-clinic);

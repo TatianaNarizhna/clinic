@@ -6,6 +6,7 @@ import {
   Marker,
   InfoWindow,
 } from '@react-google-maps/api';
+import { Link } from 'react-router-dom';
 import { IResItem } from '../../types/searchTypes';
 import markerGreen from './markerGreen.png';
 import s from './Map.module.css';
@@ -82,22 +83,25 @@ const Map: React.FC<IMyComponentProps> = ({
       {coordinates &&
         coordinates.length > 0 &&
         coordinates.map((marker, i) => (
-          <Marker
-            key={i}
-            position={{ lat: marker.latitude, lng: marker.longitude }}
-            icon={
-              selectedMarker &&
-              selectedMarker.latitude === marker.latitude &&
-              selectedMarker.longitude === marker.longitude
-                ? {
-                    url: markerGreen,
-                    scaledSize: new window.google.maps.Size(70, 70),
-                  }
-                : ''
-            }
-            onClick={() => handleMarkerClick(marker)}
-            title={marker?.longName}
-          />
+          <a href={`#{marker.longName}`}>
+            {' '}
+            <Marker
+              key={i}
+              position={{ lat: marker.latitude, lng: marker.longitude }}
+              icon={
+                selectedMarker &&
+                selectedMarker.latitude === marker.latitude &&
+                selectedMarker.longitude === marker.longitude
+                  ? {
+                      url: markerGreen,
+                      scaledSize: new window.google.maps.Size(70, 70),
+                    }
+                  : ''
+              }
+              onClick={() => handleMarkerClick(marker)}
+              title={marker?.longName}
+            />
+          </a>
         ))}
       {selectedMarker && (
         <InfoWindow
