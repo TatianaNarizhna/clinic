@@ -218,7 +218,7 @@ input[type='radio'] + .check {
     }  
 
     .form_control {
-    padding: 0 27px;
+    padding: 8px 8px 8px 27px;
     }
 
     .button {
